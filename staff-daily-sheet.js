@@ -9,219 +9,506 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 
-// Login Staff
-const staff =
-JSON.parse(localStorage.getItem("staffLogin"));
+// =================================================
+// OWNER LOGIN
+// =================================================
+
+const ownerData =
+    localStorage.getItem("ownerLogin");
 
 
-// Today's Date
+if (!ownerData) {
+
+    alert(
+        "Owner login session not found. Please login again."
+    );
+
+    window.location.href =
+        "owner-login.html";
+
+    throw new Error(
+        "Owner login not found"
+    );
+}
+
+
+const owner =
+    JSON.parse(ownerData);
+
+
+if (!owner || !owner.ownerId) {
+
+    alert(
+        "Invalid Owner Login"
+    );
+
+    localStorage.removeItem(
+        "ownerLogin"
+    );
+
+    window.location.href =
+        "owner-login.html";
+
+    throw new Error(
+        "Invalid owner login"
+    );
+}
+
+
+const ownerId =
+    owner.ownerId;
+
+
+console.log(
+    "CURRENT OWNER ID:",
+    ownerId
+);
+
+
+// =================================================
+// TODAY'S DATE
+// =================================================
+
 const today =
-new Date().toISOString().split("T")[0];
+    new Date()
+        .toISOString()
+        .split("T")[0];
 
 
-// Set Date
-document.getElementById("todayDate").value =
-today;
+document.getElementById(
+    "todayDate"
+).value = today;
 
 
-// Set Staff Name
-document.getElementById("staffName").value =
-staff.name || staff.username;
+// =================================================
+// OWNER NAME
+// =================================================
+
+document.getElementById(
+    "ownerName"
+).value =
+    owner.name ||
+    owner.username ||
+    "";
 
 
-// Totals
+// =================================================
+// TOTALS
+// =================================================
+
 let totalLoan = 0;
+
 let totalCollection = 0;
 
-async function loadTodayLoan(){
+
+// =================================================
+// LOAD TODAY'S LOANS
+// =================================================
+
+async function loadTodayLoan() {
 
     totalLoan = 0;
 
+
     const q = query(
 
-        collection(db,"dailyLoans"),
+        collection(
+            db,
+            "dailyLoans"
+        ),
 
-        where("staffUser","==",staff.username),
+        // Current Owner only
+        where(
+            "ownerId",
+            "==",
+            ownerId
+        ),
 
-        where("date","==",today)
+        // Today only
+        where(
+            "date",
+            "==",
+            today
+        )
 
     );
 
-    const snap = await getDocs(q);
 
-    snap.forEach((doc)=>{
+    const snap =
+        await getDocs(q);
 
-        totalLoan += Number(
-            doc.data().loanAmount || 0
-        );
+
+    snap.forEach((docSnap) => {
+
+        const data =
+            docSnap.data();
+
+
+        totalLoan +=
+            Number(
+                data.loanAmount || 0
+            );
 
     });
 
-    document.getElementById("totalLoan").innerHTML =
-    "₹ " + totalLoan;
+
+    document.getElementById(
+        "totalLoan"
+    ).innerHTML =
+        "₹ " + totalLoan;
+
+
+    calculateClosing();
 
 }
 
 
-async function loadTodayCollection(){
+// =================================================
+// LOAD TODAY'S COLLECTION
+// =================================================
+
+async function loadTodayCollection() {
 
     totalCollection = 0;
 
+
     const q = query(
-        collection(db,"payments"),
-        where("staffUser","==",staff.username)
+
+        collection(
+            db,
+            "payments"
+        ),
+
+        // Current Owner only
+        where(
+            "ownerId",
+            "==",
+            ownerId
+        )
+
     );
 
-    const snap = await getDocs(q);
 
-    snap.forEach((doc)=>{
+    const snap =
+        await getDocs(q);
 
-        const data = doc.data();
 
-        if(data.paymentDate){
+    snap.forEach((docSnap) => {
 
-            const paymentDate =
-                new Date(
-                    data.paymentDate.seconds
-                    ? data.paymentDate.seconds * 1000
-                    : data.paymentDate
-                ).toISOString().split("T")[0];
+        const data =
+            docSnap.data();
 
-            if(paymentDate == today){
+
+        if (
+            data.paymentDate
+        ) {
+
+            let paymentDate;
+
+
+            if (
+                data.paymentDate.seconds
+            ) {
+
+                paymentDate =
+                    new Date(
+                        data.paymentDate.seconds *
+                        1000
+                    )
+                    .toISOString()
+                    .split("T")[0];
+
+            } else {
+
+                paymentDate =
+                    new Date(
+                        data.paymentDate
+                    )
+                    .toISOString()
+                    .split("T")[0];
+
+            }
+
+
+            if (
+                paymentDate === today
+            ) {
 
                 totalCollection +=
-                    Number(data.amount || 0);
+                    Number(
+                        data.amount || 0
+                    );
+
             }
+
         }
+
     });
 
-    document.getElementById("totalCollection").innerHTML =
+
+    document.getElementById(
+        "totalCollection"
+    ).innerHTML =
         "₹ " + totalCollection;
+
+
+    calculateClosing();
+
 }
-// ===============================
-// Closing Cash
-// ===============================
+
+
+// =================================================
+// CALCULATE CLOSING CASH
+// =================================================
 
 function calculateClosing() {
 
     const openingCash =
         Number(
-            document.getElementById("openingCash").value
+            document.getElementById(
+                "openingCash"
+            ).value
         ) || 0;
+
 
     const expenses =
         Number(
-            document.getElementById("expenses").value
+            document.getElementById(
+                "expenses"
+            ).value
         ) || 0;
+
+
+    /*
+       Closing Cash Formula
+
+       Opening Cash
+       - Today's Loan
+       + Today's Collection
+       - Expenses
+    */
 
     const closingCash =
-    openingCash -
-    totalLoan +
-    totalCollection -
-    expenses;
+        openingCash
+        - totalLoan
+        + totalCollection
+        - expenses;
 
-    document.getElementById("closingCash").innerHTML =
+
+    document.getElementById(
+        "closingCash"
+    ).innerHTML =
         "₹ " + closingCash;
+
 }
 
-document.getElementById("openingCash")
-    .addEventListener("input", calculateClosing);
 
-document.getElementById("expenses")
-    .addEventListener("input", calculateClosing);
+// =================================================
+// INPUT EVENTS
+// =================================================
 
-// Auto Calculate
+document.getElementById(
+    "openingCash"
+)
+.addEventListener(
+    "input",
+    calculateClosing
+);
 
 
-document.getElementById("expenses")
-.addEventListener("input", calculateClosing);
+document.getElementById(
+    "expenses"
+)
+.addEventListener(
+    "input",
+    calculateClosing
+);
 
 
-// ===============================
-// Save Daily Sheet
-// ===============================
- window.saveDailySheet = async function () {
+// =================================================
+// SAVE DAILY SHEET
+// =================================================
 
-    // Opening Cash
-    const openingCash =
-        Number(
-            document.getElementById("openingCash").value
-        ) || 0;
-
-    // Expenses
-    const expenses =
-        Number(
-            document.getElementById("expenses").value
-        ) || 0;
-
-    // Notes
-    const notes =
-        document.getElementById("notes").value || "";
-        
+window.saveDailySheet =
+async function () {
 
     try {
 
-        // Get latest Loan and Collection totals
+        // =========================================
+        // OPENING CASH
+        // =========================================
+
+        const openingCash =
+            Number(
+                document.getElementById(
+                    "openingCash"
+                ).value
+            ) || 0;
+
+
+        // =========================================
+        // EXPENSES
+        // =========================================
+
+        const expenses =
+            Number(
+                document.getElementById(
+                    "expenses"
+                ).value
+            ) || 0;
+
+
+        // =========================================
+        // NOTES
+        // =========================================
+
+        const notes =
+            document.getElementById(
+                "notes"
+            ).value || "";
+
+
+        // =========================================
+        // REFRESH LOAN / COLLECTION TOTALS
+        // =========================================
+
         await loadTodayLoan();
+
         await loadTodayCollection();
 
-        // Calculate Closing Cash
-        const closingCash =
-    openingCash -
-    totalLoan +
-    todayCollection -
-    expenses;
 
-        // Display Closing Cash
-        document.getElementById("closingCash").innerHTML =
+        // =========================================
+        // CLOSING CASH
+        // =========================================
+
+        const closingCash =
+            openingCash
+            - totalLoan
+            + totalCollection
+            - expenses;
+
+
+        document.getElementById(
+            "closingCash"
+        ).innerHTML =
             "₹ " + closingCash;
 
-        console.log("Opening Cash:", openingCash);
-        console.log("Loan:", totalLoan);
-        console.log("Collection:", totalCollection);
-        console.log("Expenses:", expenses);
-        console.log("Closing Cash:", closingCash);
 
-        // Save Daily Sheet
+        console.log(
+            "Owner ID:",
+            ownerId
+        );
+
+        console.log(
+            "Opening Cash:",
+            openingCash
+        );
+
+        console.log(
+            "Today's Loan:",
+            totalLoan
+        );
+
+        console.log(
+            "Today's Collection:",
+            totalCollection
+        );
+
+        console.log(
+            "Expenses:",
+            expenses
+        );
+
+        console.log(
+            "Closing Cash:",
+            closingCash
+        );
+
+
+        // =========================================
+        // SAVE DAILY SHEET
+        // =========================================
+
         await addDoc(
-            collection(db, "dailySheets"),
+
+            collection(
+                db,
+                "dailySheets"
+            ),
+
             {
 
-                date: today,
+                // Owner separation
+                ownerId:
+                    ownerId,
 
-                staffUser:
-                    staff.username,
 
-                staffName:
-                    staff.name || staff.username,
+                // Owner details
+                ownerName:
+                    owner.name ||
+                    owner.username ||
+                    "",
 
+
+                // Date
+                date:
+                    today,
+
+
+                // Cash
                 openingCash:
                     openingCash,
 
+
+                // Today's loan
                 totalLoan:
-                    Number(totalLoan || 0),
+                    Number(
+                        totalLoan || 0
+                    ),
 
+
+                // Today's collection
                 totalCollection:
-                    Number(totalCollection || 0),
+                    Number(
+                        totalCollection || 0
+                    ),
 
+
+                // Expenses
                 expenses:
                     expenses,
 
+
+                // Closing cash
                 closingCash:
                     closingCash,
 
+
+                // Notes
                 notes:
                     notes,
+
 
                 status:
                     "Completed",
 
+
                 createdAt:
                     new Date()
+
             }
+
         );
 
-        alert("✅ Daily Sheet Saved Successfully");
+
+        // =========================================
+        // SUCCESS
+        // =========================================
+
+        alert(
+            "✅ Daily Sheet Saved Successfully"
+        );
+
 
     } catch (error) {
 
@@ -229,6 +516,7 @@ document.getElementById("expenses")
             "Save Daily Sheet Error:",
             error
         );
+
 
         alert(
             "❌ Save Failed: " +
@@ -238,18 +526,37 @@ document.getElementById("expenses")
     }
 
 };
-// ===============================
-// Page Load
-// ===============================
+
+
+// =================================================
+// PAGE LOAD
+// =================================================
 
 async function initPage() {
 
-    await loadTodayLoan();
+    try {
 
-    await loadTodayCollection();
+        await loadTodayLoan();
 
-    calculateClosing();
+        await loadTodayCollection();
+
+        calculateClosing();
+
+    } catch (error) {
+
+        console.error(
+            "Daily Sheet Load Error:",
+            error
+        );
+
+        alert(
+            "Daily Sheet Load Failed: " +
+            error.message
+        );
+
+    }
 
 }
+
 
 initPage();

@@ -27,6 +27,6 @@ function logoutStaff(){
 
     localStorage.removeItem("staffLogin");
 
-    window.location="staff-login.html";
+    window.location="owner-login.html";
 
 }

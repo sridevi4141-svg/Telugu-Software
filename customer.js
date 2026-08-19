@@ -22,75 +22,187 @@ window.addCustomer = function () {
 }
 
 
-window.saveCustomer = async function(){
+window.saveCustomer = async function () {
 
-    const serialNo = document.getElementById("serialNo").value;
-    const customerName = document.getElementById("customerName").value;
-    const relation = document.getElementById("relation").value;
-    const village = document.getElementById("village").value;
-    const phone = document.getElementById("phone").value;
-    const aadhar = document.getElementById("aadhar").value;
+    // =================================
+    // GET OWNER LOGIN
+    // =================================
 
-    const file = document.getElementById("customerPhoto").files[0];
-    const location = document.getElementById("location").value;
+    const ownerData = localStorage.getItem("ownerLogin");
 
-    if (
-        customerName == "" ||
-        relation == "" ||
-        village == "" ||
-        phone == "" ||
-        aadhar == ""
-    ) {
-        alert("Please Fill All Details");
+    if (!ownerData) {
+        alert("Owner login session not found. Please login again.");
+        window.location.href = "owner-login.html";
         return;
     }
 
-    // Day Number
-    const params = new URLSearchParams(window.location.search);
-    const day = params.get("day");
+    const owner = JSON.parse(ownerData);
 
-    // Staff Details
-    const staff = JSON.parse(localStorage.getItem("staffLogin"));
+    if (!owner || !owner.ownerId) {
+        alert("Invalid owner login session. Please login again.");
+        localStorage.removeItem("ownerLogin");
+        window.location.href = "owner-login.html";
+        return;
+    }
 
-    // Photo Upload
-   
+    const ownerId = owner.ownerId;
 
-let photoUrl = "";
+    console.log("CURRENT OWNER ID:", ownerId);
 
-if(file){
 
-    photoUrl = await uploadPhoto(file);
+    // =================================
+    // GET CUSTOMER DETAILS
+    // =================================
 
-}
-    // Save Customer
-    await addDoc(collection(db, "customers"), {
+    const serialNo =
+        document.getElementById("serialNo").value;
 
-        serialNo: serialNo,
-        customerName: customerName,
-        relation: relation,
-        village: village,
-        phone: phone,
-        aadhar: aadhar,
+    const customerName =
+        document.getElementById("customerName").value.trim();
 
-        photo: photoUrl,
-        location: location,
+    const relation =
+        document.getElementById("relation").value;
 
-        latitude: latitude,
+    const village =
+        document.getElementById("village").value.trim();
 
-        longitude: longitude,
+    const phone =
+        document.getElementById("phone").value.trim();
 
-        day: day,
-        staffUser: staff.username,
+    const aadhar =
+        document.getElementById("aadhar").value.trim();
 
-        createdDate: new Date()
 
-    });
+    // =================================
+    // PHOTO
+    // =================================
 
-    alert("Customer Saved Successfully");
+    const file =
+        document.getElementById("customerPhoto").files[0];
 
-    window.location.href = "day-customers.html?day=" + day;
 
-}
+    // =================================
+    // LOCATION
+    // =================================
+
+    const location =
+        document.getElementById("location").value;
+
+    let latitude = "";
+    let longitude = "";
+
+
+    // =================================
+    // VALIDATION
+    // =================================
+
+    if (
+        customerName === "" ||
+        relation === "" ||
+        village === "" ||
+        phone === "" ||
+        aadhar === ""
+    ) {
+
+        alert("Please Fill All Details");
+        return;
+
+    }
+
+
+    // =================================
+    // DAY NUMBER
+    // =================================
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const day =
+        params.get("day");
+
+
+    // =================================
+    // PHOTO UPLOAD
+    // =================================
+
+    let photoUrl = "";
+
+    if (file) {
+
+        photoUrl =
+            await uploadPhoto(file);
+
+    }
+
+
+    // =================================
+    // SAVE CUSTOMER
+    // =================================
+
+    try {
+
+        await addDoc(
+            collection(db, "customers"),
+            {
+
+                ownerId: ownerId,
+
+                serialNo: serialNo,
+
+                customerName: customerName,
+
+                relation: relation,
+
+                village: village,
+
+                phone: phone,
+
+                aadhar: aadhar,
+
+                photo: photoUrl,
+
+                location: location,
+
+                latitude: latitude,
+
+                longitude: longitude,
+
+                day: day,
+
+                username: owner.username || "",
+
+                createdDate: new Date()
+
+            }
+        );
+
+
+        // =================================
+        // SUCCESS
+        // =================================
+
+        alert("Customer Saved Successfully");
+
+        window.location.href =
+            "day-customers.html?day=" + day;
+
+
+    } catch (error) {
+
+        console.error(
+            "Customer Save Error:",
+            error
+        );
+
+        alert(
+            "Customer Save Failed: " +
+            error.message
+        );
+
+    }
+
+};
+
 window.getLocation = async function () {
 
     if (!navigator.geolocation) {

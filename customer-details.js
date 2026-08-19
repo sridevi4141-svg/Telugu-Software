@@ -114,89 +114,236 @@ window.calculateWeekly = function(){
 
 
 // Save Loan
-window.saveLoan = async function(){
+window.saveLoan = async function () {
 
     alert("Save Button Clicked");
 
-    const amount =
-    Number(document.getElementById("amount").value);
 
-    const toPay =
-    Number(document.getElementById("toPay").value);
+    // ==========================================
+    // OWNER LOGIN
+    // ==========================================
 
-    const weeks =
-    Number(document.getElementById("weeks").value);
+    const ownerData =
+        localStorage.getItem("ownerLogin");
 
-    const weeklyPayment =
-    Number(document.getElementById("weeklyPayment").value);
 
-    if(amount==0 || toPay==0 || weeks==0){
+    if (!ownerData) {
 
-        alert("Please Fill All Details");
+        alert(
+            "Owner login session not found. Please login again."
+        );
+
+        window.location.href =
+            "owner-login.html";
 
         return;
-
     }
 
-    try{
+
+    const owner =
+        JSON.parse(ownerData);
+
+
+    if (!owner || !owner.ownerId) {
+
+        alert(
+            "Invalid owner login session. Please login again."
+        );
+
+        localStorage.removeItem("ownerLogin");
+
+        window.location.href =
+            "owner-login.html";
+
+        return;
+    }
+
+
+    const ownerId =
+        owner.ownerId;
+
+
+    console.log(
+        "CURRENT OWNER ID:",
+        ownerId
+    );
+
+
+    // ==========================================
+    // LOAN DETAILS
+    // ==========================================
+
+    const amount =
+        Number(
+            document.getElementById("amount").value
+        );
+
+
+    const toPay =
+        Number(
+            document.getElementById("toPay").value
+        );
+
+
+    const weeks =
+        Number(
+            document.getElementById("weeks").value
+        );
+
+
+    const weeklyPayment =
+        Number(
+            document.getElementById("weeklyPayment").value
+        );
+
+
+    // ==========================================
+    // VALIDATION
+    // ==========================================
+
+    if (
+        amount <= 0 ||
+        toPay <= 0 ||
+        weeks <= 0
+    ) {
+
+        alert(
+            "Please Fill All Details"
+        );
+
+        return;
+    }
+
+
+    try {
+
+
+        // ======================================
+        // CUSTOMER DOCUMENT
+        // ======================================
+
+        const customerRef =
+            doc(
+                db,
+                "customers",
+                customerId
+            );
+
+
+        // ======================================
+        // UPDATE CUSTOMER WITH LOAN DETAILS
+        // ======================================
 
         await updateDoc(
-
-            doc(db,"customers",customerId),
-
+            customerRef,
             {
 
-                amount,
+                amount: amount,
 
-                toPay,
+                toPay: toPay,
 
-                weeks,
+                weeks: weeks,
 
-                weeklyPayment
+                weeklyPayment: weeklyPayment
 
             }
-
         );
-const customerSnap = await getDoc(
-    doc(db, "customers", customerId)
-);
 
-const customer = customerSnap.data();
 
-const staff = JSON.parse(
-    localStorage.getItem("staffLogin")
-);
+        // ======================================
+        // GET CUSTOMER
+        // ======================================
 
-await addDoc(collection(db, "dailyLoans"), {
+        const customerSnap =
+            await getDoc(
+                customerRef
+            );
 
-    customerId: customerId,
 
-    serialNo: customer.serialNo,
+        if (!customerSnap.exists()) {
 
-    customerName: customer.customerName,
+            alert(
+                "Customer not found"
+            );
 
-    loanAmount: Number(amount),
+            return;
+        }
 
-    staffUser: staff.username,
 
-    date: new Date().toISOString().split("T")[0],
+        const customer =
+            customerSnap.data();
 
-    createdDate: new Date()
 
-});
-        alert("Loan Details Saved Successfully");
+        // ======================================
+        // SAVE DAILY LOAN
+        // ======================================
 
-    }catch(error){
+        await addDoc(
+            collection(
+                db,
+                "dailyLoans"
+            ),
+            {
 
-        console.log(error);
+                ownerId: ownerId,
 
-        alert("Save Failed");
+                customerId: customerId,
+
+                serialNo:
+                    customer.serialNo || "",
+
+                customerName:
+                    customer.customerName || "",
+
+                loanAmount:
+                    Number(amount),
+
+                toPay:
+                    Number(toPay),
+
+                weeks:
+                    Number(weeks),
+
+                weeklyPayment:
+                    Number(weeklyPayment),
+
+                date:
+                    new Date()
+                        .toISOString()
+                        .split("T")[0],
+
+                createdDate:
+                    new Date()
+
+            }
+        );
+
+
+        // ======================================
+        // SUCCESS
+        // ======================================
+
+        alert(
+            "Loan Details Saved Successfully"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Loan Save Error:",
+            error
+        );
+
+
+        alert(
+            "Save Failed: " +
+            error.message
+        );
 
     }
 
-}
-
-// Create Week Cards
+};// Create Week Cards
 // =====================================
 // Create Weekly Payment Table
 // =====================================
@@ -468,13 +615,75 @@ window.closePopup=function(){
 
 window.saveWeekPayment = async function () {
 
-    const paidAmount = Number(
-        document.getElementById("paidAmount").value
-    ) || 0;
+    // ==========================================
+    // OWNER LOGIN
+    // ==========================================
+
+    const ownerData =
+        localStorage.getItem("ownerLogin");
+
+
+    if (!ownerData) {
+
+        alert(
+            "Owner login session not found. Please login again."
+        );
+
+        window.location.href =
+            "owner-login.html";
+
+        return;
+    }
+
+
+    const owner =
+        JSON.parse(ownerData);
+
+
+    if (!owner || !owner.ownerId) {
+
+        alert(
+            "Invalid Owner Login"
+        );
+
+        localStorage.removeItem(
+            "ownerLogin"
+        );
+
+        window.location.href =
+            "owner-login.html";
+
+        return;
+    }
+
+
+    const ownerId =
+        owner.ownerId;
+
+
+    console.log(
+        "PAYMENT OWNER ID:",
+        ownerId
+    );
+
+
+    // ==========================================
+    // PAID AMOUNT
+    // ==========================================
+
+    const paidAmount =
+        Number(
+            document.getElementById(
+                "paidAmount"
+            ).value
+        ) || 0;
+
 
     if (paidAmount <= 0) {
 
-        alert("Enter Amount");
+        alert(
+            "Enter Amount"
+        );
 
         return;
     }
@@ -482,23 +691,29 @@ window.saveWeekPayment = async function () {
 
     try {
 
-        // ============================
-        // Get Customer
-        // ============================
+        // ======================================
+        // GET CUSTOMER
+        // ======================================
 
-        const customerRef = doc(
-            db,
-            "customers",
-            customerId
-        );
+        const customerRef =
+            doc(
+                db,
+                "customers",
+                customerId
+            );
+
 
         const customerSnap =
-            await getDoc(customerRef);
+            await getDoc(
+                customerRef
+            );
 
 
         if (!customerSnap.exists()) {
 
-            alert("Customer Not Found");
+            alert(
+                "Customer Not Found"
+            );
 
             return;
         }
@@ -508,19 +723,41 @@ window.saveWeekPayment = async function () {
             customerSnap.data();
 
 
-        // ============================
-        // Current Balance
-        // ============================
+        // ======================================
+        // CHECK CUSTOMER OWNER
+        // ======================================
+
+        if (
+            customer.ownerId &&
+            customer.ownerId !== ownerId
+        ) {
+
+            alert(
+                "You cannot make payment for this customer."
+            );
+
+            return;
+        }
+
+
+        // ======================================
+        // CURRENT BALANCE
+        // ======================================
 
         const currentBalance =
-            Number(customer.toPay || 0);
+            Number(
+                customer.toPay || 0
+            );
 
 
-        // ============================
-        // Check Balance
-        // ============================
+        // ======================================
+        // CHECK BALANCE
+        // ======================================
 
-        if (paidAmount > currentBalance) {
+        if (
+            paidAmount >
+            currentBalance
+        ) {
 
             alert(
                 "Payment cannot be greater than remaining balance ₹"
@@ -531,39 +768,29 @@ window.saveWeekPayment = async function () {
         }
 
 
-        // ============================
-        // Selected Week
-        // ============================
+        // ======================================
+        // SELECTED WEEK
+        // ======================================
 
         const weekNumber =
-            Number(selectedWeek) || 1;
+            Number(
+                selectedWeek
+            ) || 1;
 
 
-        // ============================
-        // Staff
-        // ============================
-
-        const staff =
-            JSON.parse(
-                localStorage.getItem("staffLogin")
-            );
-
-
-        if (!staff) {
-
-            alert("Staff Login Not Found");
-
-            return;
-        }
-
-
-        // ============================
-        // SAVE FULL PAYMENT
-        // ============================
+        // ======================================
+        // SAVE PAYMENT
+        // ======================================
 
         await addDoc(
-            collection(db, "payments"),
+            collection(
+                db,
+                "payments"
+            ),
             {
+
+                ownerId:
+                    ownerId,
 
                 customerId:
                     customerId,
@@ -577,9 +804,6 @@ window.saveWeekPayment = async function () {
                 paymentDate:
                     new Date(),
 
-                staffUser:
-                    staff.username,
-
                 status:
                     "Paid"
 
@@ -587,12 +811,13 @@ window.saveWeekPayment = async function () {
         );
 
 
-        // ============================
-        // Update Customer Balance
-        // ============================
+        // ======================================
+        // UPDATE CUSTOMER BALANCE
+        // ======================================
 
         const newBalance =
-            currentBalance - paidAmount;
+            currentBalance -
+            paidAmount;
 
 
         await updateDoc(
@@ -606,27 +831,36 @@ window.saveWeekPayment = async function () {
         );
 
 
-        // ============================
-        // Update Balance Textbox
-        // ============================
+        // ======================================
+        // UPDATE BALANCE TEXTBOX
+        // ======================================
 
-        document.getElementById(
-            "toPay"
-        ).value = newBalance;
+        const toPayElement =
+            document.getElementById(
+                "toPay"
+            );
 
 
-        // ============================
-        // Clear Payment Input
-        // ============================
+        if (toPayElement) {
+
+            toPayElement.value =
+                newBalance;
+
+        }
+
+
+        // ======================================
+        // CLEAR PAYMENT INPUT
+        // ======================================
 
         document.getElementById(
             "paidAmount"
         ).value = "";
 
 
-        // ============================
-        // Success
-        // ============================
+        // ======================================
+        // SUCCESS
+        // ======================================
 
         alert(
             "Payment Saved Successfully"
@@ -636,21 +870,27 @@ window.saveWeekPayment = async function () {
         closePopup();
 
 
-        // ============================
-        // Reload Customer
-        // ============================
+        // ======================================
+        // RELOAD CUSTOMER
+        // ======================================
 
         await loadCustomer();
 
 
-        // ============================
-        // Reload Weekly Table
-        // ============================
+        // ======================================
+        // RELOAD WEEKLY TABLE
+        // ======================================
+
+        const weeksElement =
+            document.getElementById(
+                "weeks"
+            );
+
 
         const totalWeeks =
-            Number(
-                document.getElementById("weeks").value
-            ) || 0;
+            weeksElement
+                ? Number(weeksElement.value) || 0
+                : 0;
 
 
         await createWeeks(
@@ -665,8 +905,10 @@ window.saveWeekPayment = async function () {
             error
         );
 
+
         alert(
-            "Payment Failed"
+            "Payment Failed: " +
+            error.message
         );
 
     }
