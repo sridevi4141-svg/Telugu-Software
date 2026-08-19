@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Staff Dashboard</title>
+<style>
+body{
+
+    margin:0;
+
+    background:#f5f5f5;
+
+    font-family:Arial,sans-serif;
+
+}
+
+.top-bar{
+
+    background:#1565c0;
+
+    color:#fff;
+
+    padding:18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.logout-btn{
+
+    border:none;
+
+    background:red;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+.dashboard-grid{
+
+    width:95%;
+
+    max-width:900px;
+
+    margin:20px auto;
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:15px;
+
+}
+
+.dashboard-card{
+
+    background:white;
+
+    border-radius:15px;
+
+    text-align:center;
+
+    padding:30px 15px;
+
+    font-size:45px;
+
+    cursor:pointer;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+    transition:.3s;
+
+}
+
+.dashboard-card:hover{
+
+    transform:scale(1.03);
+
+}
+
+.dashboard-card h3{
+
+    margin-top:15px;
+
+    font-size:20px;
+
+}
+
+.dashboard-card{
+    color:white;
+    border-radius:15px;
+    text-align:center;
+    padding:30px 15px;
+    font-size:45px;
+    cursor:pointer;
+    transition:.3s;
+    box-shadow:0 5px 15px rgba(0,0,0,.2);
+}
+
+.dashboard-card h3{
+    color:white;
+    margin-top:15px;
+    font-size:20px;
+}
+
+/* Day Colors */
+
+.dashboard-card:nth-child(1){
+    background:#96d198;     /* Green */
+}
+
+.dashboard-card:nth-child(2){
+    background:#8eb4d3;     /* Blue */
+}
+
+.dashboard-card:nth-child(3){
+    background:#e9be7e;     /* Orange */
+}
+
+.dashboard-card:nth-child(4){
+    background:#dda4e7;     /* Purple */
+}
+
+.dashboard-card:nth-child(5){
+    background:#e4958f;     /* Red */
+}
+
+.dashboard-card:nth-child(6){
+    background:#9adbd5;     /* Teal */
+}
+
+.dashboard-card:nth-child(7){
+    background:#795548;     /* Brown */
+}
+
+.dashboard-card:hover{
+    transform:translateY(-6px);
+}
+.dashboard-card p{
+    margin-top:8px;
+    font-size:14px;
+    color:#f5f5f5;
+}
+
+@media(max-width:600px){
+
+.dashboard-grid{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+.dashboard-card{
+
+    padding:22px 10px;
+
+    font-size:36px;
+
+}
+
+.dashboard-card h3{
+
+    font-size:17px;
+
+}
+
+.top-bar{
+
+    padding:15px;
+
+}
+
+.top-bar h2{
+
+    font-size:22px;
+
+}
+
+.logout-btn{
+
+    padding:8px 12px;
+
+    font-size:14px;
+
+}
+
+}
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+    <h2 id="staffWelcome">👋 Welcome Staff</h2>
+
+    <button class="logout-btn" onclick="logoutStaff()">
+        Logout
+    </button>
+
+</div>
+
+<div class="dashboard-grid">
+
+    <div class="dashboard-card" onclick="openDay(1)">
+        
+        <h3>సోమవారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(2)">
+        
+        <h3>మంగళవారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(3)">
+        
+        <h3>బుధవారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(4)">
+        
+        <h3>గురువారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(5)">
+        
+        <h3>శుక్రవారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(6)">
+        
+        <h3>శనివారం</h3>
+          <p>Collections</p>
+    </div>
+
+    <div class="dashboard-card" onclick="openDay(7)">
+        
+        <h3>ఆదివారం</h3>
+          <p>Collections</p>
+    </div>
+
+</div>
+<div class="dashboard-card"
+     onclick="window.location='staff-daily-sheet.html'">
+
+    📒
+
+    <h3>Daily Sheet</h3>
+
+</div>
+<script src="staff-dashboard.js"></script>
+
+</body>
+</html>

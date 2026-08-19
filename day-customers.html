@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Day Customers</title>
+
+  <style>
+    /* DAY CUSTOMER PAGE */
+
+.customer-header{
+
+    width:95%;
+
+    max-width:900px;
+
+    margin:20px auto;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+}
+
+.add-btn{
+
+    background:#4CAF50;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 20px;
+
+    border-radius:8px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+.add-btn:hover{
+
+    background:#388E3C;
+
+}
+
+.back-btn{
+
+    background:#1565c0;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+.table-box{
+
+    width:95%;
+
+    max-width:900px;
+
+    margin:auto;
+
+    background:white;
+
+    border-radius:12px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+    overflow-x:auto;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+table th{
+
+    background:#1565c0;
+
+    color:white;
+
+    padding:12px;
+
+}
+
+table td{
+
+    padding:12px;
+
+    text-align:center;
+
+    border-bottom:1px solid #ddd;
+
+}
+.search-box{
+
+    margin:15px 0;
+
+}
+
+.search-box input{
+
+    width: 30%;
+    padding:14px;
+    border:2px solid #1976d2;
+    border-radius:10px;
+    font-size:16px;
+    box-sizing:border-box;
+
+}
+
+.search-box input:focus{
+
+    outline:none;
+    border-color:#4CAF50;
+
+}
+.filter-box{
+    display:flex;
+    gap:10px;
+    margin-left:15px;
+}
+
+.filter-box button{
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:bold;
+}
+
+#paidBtn{
+    background:#28a745;
+}
+
+#unpaidBtn{
+    background:#dc3545;
+}
+
+@media(max-width:600px){
+
+.customer-header{
+
+    justify-content:center;
+
+}
+
+.add-btn{
+
+    width:100%;
+
+}
+
+}</style>
+
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+
+    <div class="top-bar">
+
+        <button class="back-btn"
+                onclick="window.location='staff-dashboard.html'">
+
+            ⬅ Back
+
+        </button>
+
+        <h2 id="dayTitle">
+            Day 1 Customers
+        </h2>
+
+    </div>
+
+    <!-- Add Customer -->
+
+    <div class="customer-header">
+
+        <button class="add-btn"
+        onclick="addCustomer()">
+
+            ➕ Add Customer
+
+        </button>
+
+    </div>
+    <div class="search-box">
+
+    <input
+    type="text"
+    id="searchCustomer"
+    placeholder="🔍 సీరియల్ నంబర్ / పేరు / ఫోన్ ద్వారా వెతకండి"
+    onkeyup="searchCustomer()">
+
+</div>
+
+
+    <button id="paidBtn" onclick="filterCustomers('paid')">
+    🟢 Paid
+</button>
+
+<button id="unpaidBtn" onclick="filterCustomers('unpaid')">
+    🔴 Unpaid
+</button>
+
+    <div class="table-box">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>SerialNo</th>
+
+                    <th>Name</th>
+                    <th>Relation</th>
+
+                    <th>Village</th>
+
+                    <th>Phone</th>
+                    <th>Aadhaar</th>
+                    <th>Photo</th>
+                    
+
+                    <th>Location</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="customerTable">
+
+                <!-- Customers Here -->
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <script type="module" src="day-customers.js"></script>
+
+</body>
+
+</html>

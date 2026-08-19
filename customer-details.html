@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Details</title>
+
+<style>
+
+body{
+
+    margin:0;
+    padding:15px;
+    font-family:Arial,sans-serif;
+    background:#f3f6fb;
+
+}
+
+.container{
+
+    width:95%;
+    max-width:700px;
+    margin:auto;
+
+}
+
+.back-btn{
+
+    background:#1565c0;
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:20px;
+
+}
+
+.profile{
+
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    margin-bottom:20px;
+
+}
+
+.profile img{
+
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #2196F3;
+
+}
+
+.profile h2{
+
+    margin-top:10px;
+    margin-bottom:5px;
+
+}
+
+.profile p{
+
+    color:#666;
+
+}
+
+.loan-card{
+
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+
+}
+
+.loan-card label{
+
+    display:block;
+    margin-top:12px;
+    font-weight:bold;
+
+}
+
+.loan-card input{
+
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:8px;
+
+}
+
+.save-btn{
+
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:17px;
+    cursor:pointer;
+
+}
+
+.save-btn:hover{
+
+    background:#2e7d32;
+
+}
+
+.week-title{
+
+    margin-top:25px;
+    font-size:22px;
+    font-weight:bold;
+
+}
+
+.week-grid{
+
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-top:15px;
+
+}
+
+.week-card{
+
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+    cursor:pointer;
+
+}
+
+.week-card:hover{
+
+    transform:scale(1.03);
+
+}
+
+.pending{
+
+    margin-top:10px;
+    background:#ff9800;
+    color:white;
+    border:none;
+    padding:8px;
+    width:100%;
+    border-radius:6px;
+
+}
+
+.paid{
+
+    background:#4CAF50;
+
+}
+
+.popup{
+
+    display:none;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+
+}
+
+.popup-content{
+
+    width:90%;
+    max-width:350px;
+    background:#fff;
+    margin:120px auto;
+    padding:20px;
+    border-radius:12px;
+
+}
+
+.popup-content input{
+
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    margin-top:10px;
+
+}
+
+.cancel-btn{
+
+    width:100%;
+    margin-top:10px;
+    padding:12px;
+    border:none;
+    background:red;
+    color:white;
+    border-radius:8px;
+
+}
+
+.payment-table{
+
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+
+}
+
+.payment-table th{
+
+    background:#1976d2;
+    color:white;
+    padding:12px;
+
+}
+button:disabled{
+    background: #4CAF50;
+    color: white;
+    cursor: not-allowed;
+}
+
+.payment-table td{
+
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+
+}
+
+.pay-btn{
+
+    background:#4CAF50;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+
+}
+
+.pending{
+
+    color:#ff9800;
+    font-weight:bold;
+
+}
+
+.paid{
+
+    color:green;
+    font-weight:bold;
+
+}
+
+@media(max-width:768px){
+
+.payment-table{
+
+    font-size:13px;
+
+}
+
+.payment-table th,
+.payment-table td{
+
+    padding:8px;
+
+}
+
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<button
+class="back-btn"
+onclick="history.back()">
+
+⬅ Back
+
+</button>
+
+<div class="profile">
+
+<img id="customerPhoto"
+src="user.png">
+
+<h2 id="customerName">
+
+Customer Name
+
+</h2>
+
+<p id="customerVillage">
+
+Village
+
+</p>
+
+
+
+</div>
+
+<div class="loan-card">
+
+<h3>💰 Loan Details</h3>
+
+<label>Amount</label>
+
+<input
+type="number"
+id="amount">
+
+<label>To Pay</label>
+
+<input
+type="number"
+id="toPay"
+oninput="calculateWeekly()">
+
+<label>No.of Weeks</label>
+
+<input
+type="number"
+id="weeks"
+oninput="calculateWeekly()">
+
+<label>Weekly Payment</label>
+
+<input
+type="number"
+id="weeklyPayment"
+readonly>
+
+<button
+class="save-btn"
+onclick="saveLoan()">
+
+Save Loan Details
+
+</button>
+
+</div>
+
+
+<h3>📅 Weekly Collection</h3>
+
+<table class="payment-table">
+
+    <thead>
+
+        <tr>
+
+            <th>Week</th>
+
+            <th>Amount</th>
+
+            <th>Date</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody id="paymentTable">
+
+    </tbody>
+
+</table>
+<div
+id="paymentPopup"
+class="popup">
+
+<div class="popup-content">
+
+<h3 id="weekTitle">
+
+Week
+
+</h3>
+
+<label>
+
+Received Amount
+
+</label>
+
+<input
+type="number"
+id="paidAmount">
+
+<button
+class="save-btn"
+onclick="saveWeekPayment()">
+
+Save Payment
+
+</button>
+
+<button
+class="cancel-btn"
+onclick="closePopup()">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script type="module"
+src="customer-details.js"></script>
+
+</body>
+
+</html>

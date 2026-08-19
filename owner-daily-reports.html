@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Daily Reports</title>
+
+
+<style>
+
+body{
+
+    background:#f5f5f5;
+
+    font-family:Arial;
+
+    margin:0;
+
+    padding:20px;
+
+}
+
+h2{
+
+    text-align:center;
+
+    color:#1565c0;
+
+}
+
+#staffContainer{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:10px;
+    padding:20px;
+}
+
+.staff-card{
+    width:180px;
+    margin:auto;
+    background:#fff;
+    border-radius:15px;
+    padding:15px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    cursor:pointer;
+    transition:.3s;
+}
+
+.staff-card:hover{
+    transform:translateY(-5px);
+}
+
+.staff-card img{
+    width:60px;
+    height:60px;
+}
+
+.staff-card h3{
+    margin:10px 0 5px;
+    font-size:20px;
+}
+
+.staff-card p{
+    margin:0;
+    color:#666;
+    font-size:14px;
+}
+
+.status{
+    margin-top:10px;
+    font-size:15px;
+    font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>📊 Daily Reports</h2>
+
+<div id="staffContainer">
+
+</div>
+
+<script
+type="module"
+src="owner-daily-reports.js">
+
+</script>
+
+</body>
+
+</html>
