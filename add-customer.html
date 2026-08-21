@@ -83,6 +83,32 @@
     background:#f57c00;
 
 }
+.voice-input{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:15px;
+}
+
+.voice-input input{
+    flex:1;
+    margin-bottom:0;
+}
+
+.voice-input button{
+    width:55px;
+    height:48px;
+    border:none;
+    border-radius:8px;
+    background:#2196F3;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.voice-input button:hover{
+    background:#1976D2;
+}
 
 @media screen and (max-width:768px){
 
@@ -156,16 +182,37 @@
 
     <label>Customer Name</label>
 
+<div class="voice-input">
     <input type="text"
            id="customerName"
            placeholder="Customer Name">
 
-    <label>W/o , S/o , D/o</label>
+    <button type="button"
+            onclick="startVoice('customerName')">
+        🎤
+    </button>
+</div>
 
+
+<label>W/o , S/o , D/o</label>
+
+<input type="text"
+       id="relation"
+       placeholder="W/o, S/o or D/o">
+
+
+<label>Village</label>
+
+<div class="voice-input">
     <input type="text"
-           id="relation"
-           placeholder="W/o, S/o or D/o">
+           id="village"
+           placeholder="Village">
 
+    <button type="button"
+            onclick="startVoice('village')">
+        🎤
+    </button>
+</div>
     <label>Village</label>
 
     <input type="text"

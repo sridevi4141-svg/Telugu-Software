@@ -263,3 +263,130 @@ async function uploadPhoto(file) {
 
     return data.secure_url;
 }
+
+function startVoice(inputId) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert(
+            "Voice input is not supported in this browser.\n" +
+            "Please use Google Chrome or Microsoft Edge."
+        );
+        return;
+    }
+
+    const input = document.getElementById(inputId);
+
+    if (!input) {
+        alert("Input field not found: " + inputId);
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    // Telugu
+    recognition.lang = "te-IN";
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function () {
+
+        console.log("🎤 Voice listening started");
+
+        input.placeholder = "🎤 Listening... Speak now";
+
+        input.style.border = "2px solid #2196F3";
+    };
+
+    recognition.onresult = function (event) {
+
+        const transcript =
+            event.results[0][0].transcript;
+
+        console.log("Voice result:", transcript);
+
+        input.value = transcript;
+
+        input.placeholder =
+            inputId === "customerName"
+                ? "Customer Name"
+                : "Village";
+
+        input.style.border = "1px solid #ccc";
+    };
+
+    recognition.onerror = function (event) {
+
+        console.log("Speech Recognition Error:", event.error);
+
+        input.style.border = "1px solid #ccc";
+
+        input.placeholder =
+            inputId === "customerName"
+                ? "Customer Name"
+                : "Village";
+
+        if (event.error === "not-allowed") {
+
+            alert(
+                "Microphone permission denied.\n\n" +
+                "Please allow Microphone permission for this website."
+            );
+
+        } else if (event.error === "no-speech") {
+
+            alert(
+                "No voice detected.\n\n" +
+                "Please click 🎤 and speak clearly."
+            );
+
+        } else if (event.error === "audio-capture") {
+
+            alert(
+                "Microphone not found.\n\n" +
+                "Please check your microphone connection."
+            );
+
+        } else if (event.error === "network") {
+
+            alert(
+                "Voice service connection failed.\n\n" +
+                "Please check your internet connection and try again."
+            );
+
+        } else {
+
+            alert(
+                "Voice input failed: " +
+                event.error
+            );
+        }
+    };
+
+    recognition.onend = function () {
+
+        console.log("🎤 Voice listening ended");
+
+        input.style.border = "1px solid #ccc";
+    };
+
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        console.log("Recognition start error:", error);
+
+        alert("Unable to start microphone. Please try again.");
+    }
+}
+
+
+// IMPORTANT because customer.js is a module
+window.startVoice = startVoice;
