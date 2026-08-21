@@ -12,7 +12,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const params = new URLSearchParams(window.location.search);
 const day = params.get("day");
-
+  
+const session =
+    params.get("session");
 
 let latitude = "";
 let longitude = "";
@@ -169,7 +171,9 @@ window.saveCustomer = async function () {
 
                 day: day,
 
-                username: owner.username || "",
+                 session: session,
+
+                 username: owner.username || "",
 
                 createdDate: new Date()
 

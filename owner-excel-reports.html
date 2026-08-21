@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Excel Reports</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    background:#f5f7fb;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+h2{
+    text-align:center;
+    color:#1565c0;
+}
+
+.owner-info{
+    text-align:center;
+    margin-bottom:25px;
+    font-weight:bold;
+}
+
+.date-box{
+    display:flex;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.date-box div{
+    flex:1;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    box-sizing:border-box;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.report-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.report-card{
+    border:none;
+    border-radius:12px;
+    padding:25px 15px;
+    color:white;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.daily{
+    background:#1565c0;
+}
+
+.collection{
+    background:#28a745;
+}
+
+.loan{
+    background:#e67e22;
+}
+
+.report-card:hover{
+    opacity:.9;
+    transform:translateY(-3px);
+}
+
+.back-btn{
+    margin-top:25px;
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    background:#555;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+#status{
+    margin-top:20px;
+    text-align:center;
+    font-weight:bold;
+}
+
+@media(max-width:600px){
+
+    .date-box{
+        flex-direction:column;
+    }
+
+    .report-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+<h2>📊 Excel Reports</h2>
+
+
+<div
+    id="ownerInfo"
+    class="owner-info">
+</div>
+
+
+<div class="date-box">
+
+    <div>
+
+        <label>From Date</label>
+
+        <input
+            type="date"
+            id="fromDate">
+
+    </div>
+
+
+    <div>
+
+        <label>To Date</label>
+
+        <input
+            type="date"
+            id="toDate">
+
+    </div>
+
+</div>
+
+
+<div class="report-grid">
+
+
+    <button
+        class="report-card daily"
+        onclick="downloadDailySheet()">
+
+        📒<br><br>
+
+        Daily Sheet Excel
+
+    </button>
+
+
+    <button
+        class="report-card collection"
+        onclick="downloadCollection()">
+
+        💰<br><br>
+
+        Collection Excel
+
+    </button>
+
+
+    <button
+        class="report-card loan"
+        onclick="downloadLoans()">
+
+        💵<br><br>
+
+        Loan Excel
+
+    </button>
+
+
+</div>
+
+
+<div id="status"></div>
+
+
+<button
+    class="back-btn"
+    onclick="history.back()">
+
+    ← Back
+
+</button>
+
+
+</div>
+
+
+<!-- SheetJS -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
+</script>
+
+
+<script
+type="module"
+src="./owner-excel-reports.js">
+</script>
+
+
+</body>
+
+</html>

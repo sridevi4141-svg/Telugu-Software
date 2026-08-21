@@ -16,7 +16,6 @@ import {
 const ownerData =
     localStorage.getItem("ownerLogin");
 
-
 if (!ownerData) {
 
     alert(
@@ -32,19 +31,30 @@ if (!ownerData) {
 }
 
 
-const owner =
-    JSON.parse(ownerData);
+let owner;
+
+try {
+
+    owner = JSON.parse(ownerData);
+
+} catch (error) {
+
+    localStorage.removeItem("ownerLogin");
+
+    alert("Invalid Owner Login");
+
+    window.location.href =
+        "owner-login.html";
+
+    throw error;
+}
 
 
 if (!owner || !owner.ownerId) {
 
-    alert(
-        "Invalid Owner Login"
-    );
+    alert("Invalid Owner Login");
 
-    localStorage.removeItem(
-        "ownerLogin"
-    );
+    localStorage.removeItem("ownerLogin");
 
     window.location.href =
         "owner-login.html";
@@ -84,12 +94,34 @@ document.getElementById(
 // OWNER NAME
 // =================================================
 
-document.getElementById(
-    "ownerName"
-).value =
+const ownerName =
     owner.name ||
     owner.username ||
     "";
+
+
+// If HTML has ownerName
+const ownerNameElement =
+    document.getElementById("ownerName");
+
+if (ownerNameElement) {
+
+    ownerNameElement.value =
+        ownerName;
+
+}
+
+
+// If your HTML still has staffName
+const staffNameElement =
+    document.getElementById("staffName");
+
+if (staffNameElement) {
+
+    staffNameElement.value =
+        ownerName;
+
+}
 
 
 // =================================================
@@ -117,14 +149,12 @@ async function loadTodayLoan() {
             "dailyLoans"
         ),
 
-        // Current Owner only
         where(
             "ownerId",
             "==",
             ownerId
         ),
 
-        // Today only
         where(
             "date",
             "==",
@@ -179,7 +209,6 @@ async function loadTodayCollection() {
             "payments"
         ),
 
-        // Current Owner only
         where(
             "ownerId",
             "==",
@@ -199,47 +228,50 @@ async function loadTodayCollection() {
             docSnap.data();
 
 
+        if (!data.paymentDate) {
+            return;
+        }
+
+
+        let paymentDate;
+
+
+        // Firestore Timestamp
         if (
-            data.paymentDate
+            data.paymentDate.seconds
         ) {
 
-            let paymentDate;
+            paymentDate =
+                new Date(
+                    data.paymentDate.seconds *
+                    1000
+                )
+                .toISOString()
+                .split("T")[0];
+
+        }
+
+        // JavaScript Date / string
+        else {
+
+            paymentDate =
+                new Date(
+                    data.paymentDate
+                )
+                .toISOString()
+                .split("T")[0];
+
+        }
 
 
-            if (
-                data.paymentDate.seconds
-            ) {
+        if (
+            paymentDate === today
+        ) {
 
-                paymentDate =
-                    new Date(
-                        data.paymentDate.seconds *
-                        1000
-                    )
-                    .toISOString()
-                    .split("T")[0];
-
-            } else {
-
-                paymentDate =
-                    new Date(
-                        data.paymentDate
-                    )
-                    .toISOString()
-                    .split("T")[0];
-
-            }
-
-
-            if (
-                paymentDate === today
-            ) {
-
-                totalCollection +=
-                    Number(
-                        data.amount || 0
-                    );
-
-            }
+            totalCollection +=
+                Number(
+                    data.amount || 0
+                );
 
         }
 
@@ -280,12 +312,12 @@ function calculateClosing() {
 
 
     /*
-       Closing Cash Formula
+        Closing Cash Formula
 
-       Opening Cash
-       - Today's Loan
-       + Today's Collection
-       - Expenses
+        Opening Cash
+        - Today's Loan
+        + Today's Collection
+        - Expenses
     */
 
     const closingCash =
@@ -369,7 +401,7 @@ async function () {
 
 
         // =========================================
-        // REFRESH LOAN / COLLECTION TOTALS
+        // REFRESH TOTALS
         // =========================================
 
         await loadTodayLoan();
@@ -378,7 +410,7 @@ async function () {
 
 
         // =========================================
-        // CLOSING CASH
+        // CALCULATE CLOSING
         // =========================================
 
         const closingCash =
@@ -394,9 +426,27 @@ async function () {
             "₹ " + closingCash;
 
 
+        // =========================================
+        // DEBUG
+        // =========================================
+
+        console.log(
+            "================ DAILY SHEET ================"
+        );
+
         console.log(
             "Owner ID:",
             ownerId
+        );
+
+        console.log(
+            "Owner Name:",
+            ownerName
+        );
+
+        console.log(
+            "Date:",
+            today
         );
 
         console.log(
@@ -438,60 +488,68 @@ async function () {
 
             {
 
-                // Owner separation
+                // -------------------------------
+                // OWNER SEPARATION
+                // -------------------------------
+
                 ownerId:
                     ownerId,
 
-
-                // Owner details
                 ownerName:
-                    owner.name ||
-                    owner.username ||
-                    "",
+                    ownerName,
 
 
-                // Date
+                // -------------------------------
+                // DATE
+                // -------------------------------
+
                 date:
                     today,
 
 
-                // Cash
+                // -------------------------------
+                // CASH DETAILS
+                // -------------------------------
+
                 openingCash:
                     openingCash,
 
-
-                // Today's loan
                 totalLoan:
                     Number(
                         totalLoan || 0
                     ),
 
-
-                // Today's collection
                 totalCollection:
                     Number(
                         totalCollection || 0
                     ),
 
-
-                // Expenses
                 expenses:
                     expenses,
 
-
-                // Closing cash
                 closingCash:
                     closingCash,
 
 
-                // Notes
+                // -------------------------------
+                // NOTES
+                // -------------------------------
+
                 notes:
                     notes,
 
 
+                // -------------------------------
+                // STATUS
+                // -------------------------------
+
                 status:
                     "Completed",
 
+
+                // -------------------------------
+                // CREATED TIME
+                // -------------------------------
 
                 createdAt:
                     new Date()
@@ -548,6 +606,7 @@ async function initPage() {
             "Daily Sheet Load Error:",
             error
         );
+
 
         alert(
             "Daily Sheet Load Failed: " +

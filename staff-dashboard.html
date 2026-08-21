@@ -1,274 +1,632 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Staff Dashboard</title>
+
 <style>
+
 body{
-
     margin:0;
-
     background:#f5f5f5;
-
     font-family:Arial,sans-serif;
-
 }
 
 .top-bar{
-
     background:#1565c0;
-
     color:#fff;
-
     padding:18px;
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
 }
 
 .logout-btn{
-
     border:none;
-
     background:red;
-
     color:white;
-
     padding:10px 18px;
-
     border-radius:8px;
-
     cursor:pointer;
-
 }
+
+
+/* =========================
+   DAYS GRID
+========================= */
 
 .dashboard-grid{
 
     width:95%;
-
-    max-width:900px;
+    max-width:1000px;
 
     margin:20px auto;
 
     display:grid;
 
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:
+    repeat(2,1fr);
 
-    gap:15px;
-
+    gap:18px;
 }
 
-.dashboard-card{
+
+/* =========================
+   DAY CARD
+========================= */
+
+.day-card{
 
     background:white;
 
     border-radius:15px;
 
+    padding:20px;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.15);
+
+}
+
+
+.day-title{
+
     text-align:center;
 
-    padding:30px 15px;
+    font-size:22px;
 
-    font-size:45px;
+    font-weight:bold;
+
+    margin-bottom:18px;
+
+    color:#1565c0;
+
+}
+
+
+/* =========================
+   MORNING / EVENING
+========================= */
+
+.session-box{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+    gap:12px;
+
+}
+
+
+.session-card{
+
+    padding:20px 10px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    color:white;
 
     cursor:pointer;
 
-    box-shadow:0 5px 15px rgba(0,0,0,.15);
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.15);
 
     transition:.3s;
 
 }
 
-.dashboard-card:hover{
 
-    transform:scale(1.03);
+.session-card:hover{
 
-}
-
-.dashboard-card h3{
-
-    margin-top:15px;
-
-    font-size:20px;
+    transform:translateY(-4px);
 
 }
 
-.dashboard-card{
-    color:white;
-    border-radius:15px;
-    text-align:center;
-    padding:30px 15px;
-    font-size:45px;
-    cursor:pointer;
-    transition:.3s;
-    box-shadow:0 5px 15px rgba(0,0,0,.2);
-}
 
-.dashboard-card h3{
-    color:white;
-    margin-top:15px;
-    font-size:20px;
-}
+.morning{
 
-/* Day Colors */
-
-.dashboard-card:nth-child(1){
-    background:#96d198;     /* Green */
-}
-
-.dashboard-card:nth-child(2){
-    background:#8eb4d3;     /* Blue */
-}
-
-.dashboard-card:nth-child(3){
-    background:#e9be7e;     /* Orange */
-}
-
-.dashboard-card:nth-child(4){
-    background:#dda4e7;     /* Purple */
-}
-
-.dashboard-card:nth-child(5){
-    background:#e4958f;     /* Red */
-}
-
-.dashboard-card:nth-child(6){
-    background:#9adbd5;     /* Teal */
-}
-
-.dashboard-card:nth-child(7){
-    background:#795548;     /* Brown */
-}
-
-.dashboard-card:hover{
-    transform:translateY(-6px);
-}
-.dashboard-card p{
-    margin-top:8px;
-    font-size:14px;
-    color:#f5f5f5;
-}
-
-@media(max-width:600px){
-
-.dashboard-grid{
-
-    grid-template-columns:repeat(2,1fr);
+    background:#f6b73c;
 
 }
 
-.dashboard-card{
 
-    padding:22px 10px;
+.evening{
 
-    font-size:36px;
+    background:#6c63c7;
 
 }
 
-.dashboard-card h3{
+
+.session-icon{
+
+    font-size:32px;
+
+}
+
+
+.session-card h3{
+
+    margin:8px 0 0;
 
     font-size:17px;
 
 }
 
-.top-bar{
 
-    padding:15px;
+/* =========================
+   DAILY SHEET
+========================= */
 
-}
+.daily-sheet-card{
 
-.top-bar h2{
+    width:95%;
+
+    max-width:1000px;
+
+    margin:20px auto;
+
+    background:#28a745;
+
+    color:white;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    text-align:center;
 
     font-size:22px;
 
-}
+    cursor:pointer;
 
-.logout-btn{
-
-    padding:8px 12px;
-
-    font-size:14px;
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.15);
 
 }
 
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    .dashboard-grid{
+
+        grid-template-columns:
+        1fr;
+
+    }
+
+
+    .session-card{
+
+        padding:16px 8px;
+
+    }
+
+
+    .session-icon{
+
+        font-size:27px;
+
+    }
+
+
+    .session-card h3{
+
+        font-size:15px;
+
+    }
+
+
+    .top-bar{
+
+        padding:15px;
+
+    }
+
+
+    .top-bar h2{
+
+        font-size:20px;
+
+    }
+
 }
 
-    </style>
+</style>
 
 </head>
 
+
 <body>
+
+
+<!-- =========================
+     TOP BAR
+========================= -->
 
 <div class="top-bar">
 
-    <h2 id="staffWelcome">👋 Welcome Staff</h2>
+    <h2 id="ownerWelcome">
+        👋 Welcome
+    </h2>
 
-    <button class="logout-btn" onclick="logoutStaff()">
+    <button
+        class="logout-btn"
+        onclick="logoutOwner()">
+
         Logout
+
     </button>
 
 </div>
 
+
+
+<!-- =========================
+     DAYS
+========================= -->
+
 <div class="dashboard-grid">
 
-    <div class="dashboard-card" onclick="openDay(1)">
-        
-        <h3>సోమవారం</h3>
-          <p>Collections</p>
+
+    <!-- MONDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            సోమవారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(1,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>
+                    Morning
+                </h3>
+
+                <p>
+                    Customers
+                </p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(1,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>
+                    Evening
+                </h3>
+
+                <p>
+                    Customers
+                </p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(2)">
-        
-        <h3>మంగళవారం</h3>
-          <p>Collections</p>
+
+
+    <!-- TUESDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            మంగళవారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(2,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>Morning</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(2,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>Evening</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(3)">
-        
-        <h3>బుధవారం</h3>
-          <p>Collections</p>
+
+
+    <!-- WEDNESDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            బుధవారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(3,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>Morning</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(3,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>Evening</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(4)">
-        
-        <h3>గురువారం</h3>
-          <p>Collections</p>
+
+
+    <!-- THURSDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            గురువారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(4,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>Morning</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(4,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>Evening</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(5)">
-        
-        <h3>శుక్రవారం</h3>
-          <p>Collections</p>
+
+
+    <!-- FRIDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            శుక్రవారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(5,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>Morning</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(5,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>Evening</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(6)">
-        
-        <h3>శనివారం</h3>
-          <p>Collections</p>
+
+
+    <!-- SATURDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            శనివారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(6,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>Morning</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(6,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>Evening</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="dashboard-card" onclick="openDay(7)">
-        
-        <h3>ఆదివారం</h3>
-          <p>Collections</p>
+
+
+    <!-- SUNDAY -->
+
+    <div class="day-card">
+
+        <div class="day-title">
+            ఆదివారం
+        </div>
+
+        <div class="session-box">
+
+            <div
+                class="session-card morning"
+                onclick="openSession(7,'morning')">
+
+                <div class="session-icon">
+                    🌅
+                </div>
+
+                <h3>ఉదయం</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+
+            <div
+                class="session-card evening"
+                onclick="openSession(7,'evening')">
+
+                <div class="session-icon">
+                    🌆
+                </div>
+
+                <h3>సాయంత్రం</h3>
+
+                <p>Customers</p>
+
+            </div>
+
+        </div>
+
     </div>
+
 
 </div>
-<div class="dashboard-card"
-     onclick="window.location='staff-daily-sheet.html'">
 
-    📒
 
-    <h3>Daily Sheet</h3>
+
+<!-- =========================
+     DAILY SHEET
+========================= -->
+
+<div
+    class="daily-sheet-card"
+    onclick="window.location='staff-daily-sheet.html'">
+
+    📒 Daily Sheet
 
 </div>
-<script src="staff-dashboard.js"></script>
+
+
+
+<script
+    src="staff-dashboard.js">
+</script>
+
 
 </body>
+
 </html>

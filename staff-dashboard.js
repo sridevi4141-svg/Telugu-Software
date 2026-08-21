@@ -1,32 +1,78 @@
-const params = new URLSearchParams(window.location.search);
-const day = params.get("day");
+// ==========================================
+// OWNER LOGIN
+// ==========================================
 
-console.log("Day Customers Page URL:", window.location.href);
-console.log("Day Value:", day);
+const ownerData =
+    localStorage.getItem("ownerLogin");
 
-document.getElementById("dayTitle").innerHTML = "Day " + day + " Customers";
-if(staff){
 
-    document.getElementById("staffWelcome").innerHTML =
-    "👋 Welcome " + staff.name;
+if (!ownerData) {
 
-}else{
+    alert(
+        "Owner login session not found."
+    );
 
-    window.location="staff-login.html";
+    window.location.href =
+        "owner-login.html";
+
+} else {
+
+    const owner =
+        JSON.parse(ownerData);
+
+
+    if (!owner || !owner.ownerId) {
+
+        localStorage.removeItem(
+            "ownerLogin"
+        );
+
+        window.location.href =
+            "owner-login.html";
+
+    } else {
+
+        document.getElementById(
+            "ownerWelcome"
+        ).innerHTML =
+            "👋 Welcome " +
+            (
+                owner.name ||
+                owner.username ||
+                "Owner"
+            );
+
+    }
 
 }
 
-function openDay(day){
 
-    window.location =
-    "day-customers.html?day=" + day;
+// ==========================================
+// OPEN MORNING / EVENING
+// ==========================================
+
+function openSession(day, session) {
+
+    window.location.href =
+        "day-customers.html?day=" +
+        day +
+        "&session=" +
+        session;
 
 }
 
-function logoutStaff(){
 
-    localStorage.removeItem("staffLogin");
+// ==========================================
+// LOGOUT
+// ==========================================
 
-    window.location="owner-login.html";
+function logoutOwner() {
+
+    localStorage.removeItem(
+        "ownerLogin"
+    );
+
+    window.location.href =
+        "owner-login.html";
 
 }

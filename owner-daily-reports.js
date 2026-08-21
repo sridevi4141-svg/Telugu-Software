@@ -2,261 +2,261 @@ import { db } from "./firebase-config.js";
 
 import {
     collection,
-    getDocs,
     query,
-    where
+    where,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 
-const container =
-    document.getElementById("staffContainer");
+// =====================================
+// OWNER LOGIN
+// =====================================
+
+const ownerData =
+    localStorage.getItem("ownerLogin");
+
+if (!ownerData) {
+
+    alert("Owner login session not found");
+
+    window.location.href =
+        "owner-login.html";
+
+    throw new Error("Owner login not found");
+}
 
 
-// =================================================
-// GET LOGGED-IN OWNER
-// =================================================
+let owner;
 
-function getOwnerId() {
+try {
 
-    const ownerLogin =
-        localStorage.getItem("ownerLogin");
+    owner = JSON.parse(ownerData);
 
+} catch (error) {
 
-    if (!ownerLogin) {
+    localStorage.removeItem("ownerLogin");
 
-        window.location.href =
-            "owner-login.html";
+    alert("Invalid Owner Login");
 
-        return null;
-    }
+    window.location.href =
+        "owner-login.html";
 
-
-    try {
-
-        const ownerData =
-            JSON.parse(ownerLogin);
+    throw error;
+}
 
 
-        if (!ownerData.ownerId) {
+if (!owner || !owner.ownerId) {
 
-            alert(
-                "Owner ID not found. Please login again."
-            );
+    alert("Invalid Owner Login");
 
-            localStorage.removeItem("ownerLogin");
+    localStorage.removeItem("ownerLogin");
 
-            window.location.href =
-                "owner-login.html";
+    window.location.href =
+        "owner-login.html";
 
-            return null;
-        }
+    throw new Error("Invalid Owner Login");
+}
 
 
-        return ownerData.ownerId;
+const ownerId = owner.ownerId;
+
+console.log("OWNER ID:", ownerId);
 
 
-    } catch (error) {
+// =====================================
+// OWNER NAME
+// =====================================
 
-        console.error(
-            "Owner Login Data Error:",
-            error
-        );
+const ownerName =
+    owner.name ||
+    owner.username ||
+    "";
 
-        localStorage.removeItem("ownerLogin");
 
-        window.location.href =
-            "owner-login.html";
+const ownerInfo =
+    document.getElementById("ownerInfo");
 
-        return null;
-    }
+if (ownerInfo) {
+
+    ownerInfo.innerHTML =
+        "👤 Owner: " + ownerName;
 
 }
 
 
-// =================================================
-// LOAD STAFF
-// =================================================
+// =====================================
+// LOAD DAILY SHEETS
+// =====================================
 
-async function loadStaff() {
+async function loadDailySheets() {
 
-    container.innerHTML = "";
-
-
-    const today =
-        new Date().toISOString().split("T")[0];
-
+    const tbody =
+        document.getElementById(
+            "dailySheetTable"
+        );
 
     try {
 
-        // =================================================
-        // CURRENT OWNER ID
-        // =================================================
-
-        const ownerId =
-            getOwnerId();
-
-
-        if (!ownerId) {
-            return;
-        }
-
-
         console.log(
-            "Loading Staff for Owner:",
-            ownerId
+            "Loading Daily Sheets..."
+        );
+
+        const q = query(
+
+            collection(
+                db,
+                "dailySheets"
+            ),
+
+            where(
+                "ownerId",
+                "==",
+                ownerId
+            )
+
         );
 
 
-        // =================================================
-        // GET ONLY CURRENT OWNER STAFF
-        // =================================================
-
-        const staffQuery =
-            query(
-                collection(db, "staff"),
-                where("ownerId", "==", ownerId)
-            );
+        const snapshot =
+            await getDocs(q);
 
 
-        const staffSnapshot =
-            await getDocs(staffQuery);
+        console.log(
+            "Daily Sheets Found:",
+            snapshot.size
+        );
 
 
-        // =================================================
-        // NO STAFF
-        // =================================================
+        tbody.innerHTML = "";
 
-        if (staffSnapshot.empty) {
 
-            container.innerHTML = `
-                <h3 style="text-align:center;color:red;">
-                    No Staff Found
-                </h3>
+        if (snapshot.empty) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9"
+                        class="no-data">
+                        No Daily Sheets Found
+                    </td>
+                </tr>
             `;
 
             return;
         }
 
 
-        // =================================================
-        // STAFF LOOP
-        // =================================================
+        let serialNo = 1;
 
-        for (
-            const docSnap
-            of staffSnapshot.docs
-        ) {
 
-            const staff =
+        const sheets = [];
+
+
+        snapshot.forEach((docSnap) => {
+
+            const data =
                 docSnap.data();
 
+            sheets.push(data);
 
-            // =================================================
-            // DAILY SHEET
-            // =================================================
-
-            const dailyQuery =
-                query(
-
-                    collection(db, "dailySheets"),
-
-                    where(
-                        "staffUser",
-                        "==",
-                        staff.username
-                    ),
-
-                    where(
-                        "date",
-                        "==",
-                        today
-                    )
-
-                );
+        });
 
 
-            const dailySnapshot =
-                await getDocs(dailyQuery);
+        // Newest date first
+        sheets.sort(
+            (a, b) =>
+                String(b.date || "")
+                .localeCompare(
+                    String(a.date || "")
+                )
+        );
 
 
-            let status =
-                "🔴 Pending";
+        sheets.forEach((data) => {
 
-            let color =
-                "red";
+            tbody.innerHTML += `
 
+                <tr>
 
-            // =================================================
-            // DAILY SHEET SAVED
-            // =================================================
+                    <td>
+                        ${serialNo++}
+                    </td>
 
-            if (!dailySnapshot.empty) {
+                    <td>
+                        ${data.date || ""}
+                    </td>
 
-                status =
-                    "🟢 Completed";
+                    <td class="amount">
+                        ₹ ${Number(
+                            data.openingCash || 0
+                        )}
+                    </td>
 
-                color =
-                    "green";
+                    <td class="amount">
+                        ₹ ${Number(
+                            data.totalLoan || 0
+                        )}
+                    </td>
 
-            }
+                    <td class="amount">
+                        ₹ ${Number(
+                            data.totalCollection || 0
+                        )}
+                    </td>
 
+                    <td class="amount">
+                        ₹ ${Number(
+                            data.expenses || 0
+                        )}
+                    </td>
 
-            // =================================================
-            // STAFF CARD
-            // =================================================
+                    <td class="amount">
+                        ₹ ${Number(
+                            data.closingCash || 0
+                        )}
+                    </td>
 
-            container.innerHTML += `
+                    <td>
+                        ${data.notes || "-"}
+                    </td>
 
-            <div
-                class="staff-card"
-                onclick="openReport('${staff.username}')"
-            >
+                    <td>
+                        ${data.status || "Completed"}
+                    </td>
 
-                <div style="font-size:65px;">
-                    👨‍💼
-                </div>
-
-
-                <h3>
-                    ${staff.name || ""}
-                </h3>
-
-
-                <p>
-                    ${staff.username || ""}
-                </p>
-
-
-                <div style="
-                    margin-top:10px;
-                    font-weight:bold;
-                    color:${color};
-                ">
-                    ${status}
-                </div>
-
-            </div>
+                </tr>
 
             `;
 
-        }
+        });
 
+    }
 
-    } catch (error) {
+    catch(error) {
 
         console.error(
-            "Load Staff Error:",
+            "Load Daily Sheets Error:",
             error
         );
 
 
-        container.innerHTML = `
-            <h3 style="
-                color:red;
-                text-align:center;
-            ">
-                Failed to Load Staff
-            </h3>
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="no-data">
+
+                    ❌ Daily Sheets Load Failed
+
+                    <br><br>
+
+                    ${error.message}
+
+                </td>
+
+            </tr>
+
         `;
 
     }
@@ -264,22 +264,8 @@ async function loadStaff() {
 }
 
 
-// =================================================
-// OPEN STAFF REPORT
-// =================================================
+// =====================================
+// START
+// =====================================
 
-window.openReport =
-function (username) {
-
-    window.location.href =
-        "staff-report.html?staff=" +
-        encodeURIComponent(username);
-
-};
-
-
-// =================================================
-// LOAD STAFF
-// =================================================
-
-loadStaff();
+loadDailySheets();

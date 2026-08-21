@@ -4,18 +4,25 @@ import {
     collection,
     getDocs,
     deleteDoc,
+    updateDoc,
     doc,
     query,
-    where
+    where,
+    
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
 
 // =================================================
 // GET DAY
 // =================================================
 
 const params = new URLSearchParams(window.location.search);
+
 const day = params.get("day");
+
+const session = params.get("session");
+
+console.log("DAY:", day);
+console.log("SESSION:", session);
 
 
 // =================================================
@@ -58,8 +65,13 @@ console.log("CURRENT DAY:", day);
 // DAY TITLE
 // =================================================
 
+const sessionName =
+    session === "morning"
+        ? "🌅 Morning Customers"
+        : "🌆 Evening Customers";
+
 document.getElementById("dayTitle").innerHTML =
-    "Day " + day + " Customers";
+    "Day " + day + " - " + sessionName;
 
 
 // =================================================
@@ -80,16 +92,11 @@ async function loadCustomers() {
         console.log("Loading customers...");
 
         const q = query(
-            collection(db, "customers"),
-
-            // Current Owner only
-            where("ownerId", "==", ownerId),
-
-            // Current Day only
-            where("day", "==", day)
-        );
-
-
+    collection(db, "customers"),
+    where("day", "==", day),
+    where("ownerId", "==", ownerId),
+    where("session", "==", session)
+);
         const querySnapshot = await getDocs(q);
 
 
@@ -98,23 +105,26 @@ async function loadCustomers() {
 
         querySnapshot.forEach((docSnap) => {
 
-            const data = docSnap.data();
+    const data = docSnap.data();
 
-            data.id = docSnap.id;
+    data.id = docSnap.id;
 
-            allCustomers.push(data);
+    allCustomers.push(data);
 
-        });
-
-
-        console.log(
-            "Customers Found:",
-            allCustomers.length
-        );
+});
 
 
-        displayCustomers(allCustomers);
+// Serial Number 1, 2, 3, 4... order
 
+allCustomers.sort((a, b) => {
+
+    return Number(a.serialNo || 0) -
+           Number(b.serialNo || 0);
+
+});
+
+
+displayCustomers(allCustomers);
 
     } catch (error) {
 
@@ -346,10 +356,14 @@ window.addCustomer = function () {
     const day =
         params.get("day");
 
+    const session =
+        params.get("session");
 
     window.location.href =
-        "add-customer.html?day=" + day;
-
+        "add-customer.html?day=" +
+        day +
+        "&session=" +
+        session;
 };
 
 

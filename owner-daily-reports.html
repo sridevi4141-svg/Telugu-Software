@@ -6,94 +6,417 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+      content="width=device-width, initial-scale=1.0">
 
-<title>Daily Reports</title>
-
+<title>Owner Daily Sheets</title>
 
 <style>
 
+*{
+    box-sizing:border-box;
+}
+
 body{
-
-    background:#f5f5f5;
-
-    font-family:Arial;
 
     margin:0;
 
     padding:20px;
 
+    font-family:Arial,sans-serif;
+
+    background:#f5f7fb;
+
 }
 
-h2{
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.container{
+
+    width:100%;
+
+    max-width:1100px;
+
+    margin:auto;
+
+    background:#fff;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    margin-bottom:20px;
+
+}
+
+.header h2{
+
+    margin:0;
+
+    color:#1565c0;
+
+    text-align:center;
+
+    flex:1;
+
+}
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.back-btn{
+
+    border:none;
+
+    background:#555;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+}
+
+.back-btn:hover{
+
+    background:#333;
+
+}
+
+
+/* =========================
+   OWNER INFO
+========================= */
+
+.owner-info{
+
+    background:#e3f2fd;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
 
     text-align:center;
 
     color:#1565c0;
 
-}
-
-#staffContainer{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:10px;
-    padding:20px;
-}
-
-.staff-card{
-    width:180px;
-    margin:auto;
-    background:#fff;
-    border-radius:15px;
-    padding:15px;
-    text-align:center;
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-    cursor:pointer;
-    transition:.3s;
-}
-
-.staff-card:hover{
-    transform:translateY(-5px);
-}
-
-.staff-card img{
-    width:60px;
-    height:60px;
-}
-
-.staff-card h3{
-    margin:10px 0 5px;
-    font-size:20px;
-}
-
-.staff-card p{
-    margin:0;
-    color:#666;
-    font-size:14px;
-}
-
-.status{
-    margin-top:10px;
-    font-size:15px;
     font-weight:bold;
+
 }
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table-box{
+
+    width:100%;
+
+    overflow-x:auto;
+
+}
+
+
+table{
+
+    width:100%;
+
+    min-width:900px;
+
+    border-collapse:collapse;
+
+    margin-top:10px;
+
+}
+
+
+thead th{
+
+    background:#1565c0;
+
+    color:white;
+
+    padding:12px;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+}
+
+
+tbody td{
+
+    padding:11px;
+
+    text-align:center;
+
+    border-bottom:1px solid #ddd;
+
+    white-space:nowrap;
+
+}
+
+
+tbody tr:hover{
+
+    background:#f5f5f5;
+
+}
+
+
+/* =========================
+   AMOUNT
+========================= */
+
+.amount{
+
+    font-weight:bold;
+
+}
+
+
+/* =========================
+   NO DATA
+========================= */
+
+.no-data{
+
+    text-align:center;
+
+    padding:30px;
+
+    color:#777;
+
+    font-size:16px;
+
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+
+    text-align:center;
+
+    padding:30px;
+
+    color:#1565c0;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    body{
+
+        padding:10px;
+
+    }
+
+    .container{
+
+        padding:15px;
+
+        border-radius:10px;
+
+    }
+
+    .header{
+
+        flex-direction:column;
+
+    }
+
+    .header h2{
+
+        font-size:21px;
+
+        order:-1;
+
+    }
+
+    .back-btn{
+
+        width:100%;
+
+    }
+
+    .owner-info{
+
+        font-size:14px;
+
+    }
+
+}
+
 </style>
 
 </head>
 
+
 <body>
 
-<h2>📊 Daily Reports</h2>
 
-<div id="staffContainer">
+<div class="container">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="header">
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+
+            ← Back
+
+        </button>
+
+
+        <h2>
+            📒 Owner Daily Sheets
+        </h2>
+
+    </div>
+
+
+    <!-- =========================
+         OWNER INFORMATION
+    ========================== -->
+
+    <div
+        class="owner-info"
+        id="ownerInfo">
+
+        Loading Owner...
+
+    </div>
+
+
+    <!-- =========================
+         TABLE
+    ========================== -->
+
+    <div class="table-box">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>S.No</th>
+
+                    <th>Date</th>
+
+                    <th>Opening Cash</th>
+
+                    <th>Today's Loan</th>
+
+                    <th>Today's Collection</th>
+
+                    <th>Expenses</th>
+
+                    <th>Closing Cash</th>
+
+                    <th>Notes</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="dailySheetTable">
+
+                <tr>
+
+                    <td
+                        colspan="9"
+                        class="loading">
+
+                        Loading Daily Sheets...
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 
 </div>
 
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script
-type="module"
-src="owner-daily-reports.js">
+    type="module"
+    src="owner-daily-reports.js">
+</script>
+
+
+<script>
+
+function goBack(){
+
+    window.location.href =
+        "owner-dashboard.html";
+
+}
 
 </script>
+
 
 </body>
 

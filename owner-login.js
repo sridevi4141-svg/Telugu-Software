@@ -230,7 +230,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
 
 
         window.location.href =
-            "staff-dashboard.html";
+            "owner-dashboard.html";
 
 
     } catch (error) {
