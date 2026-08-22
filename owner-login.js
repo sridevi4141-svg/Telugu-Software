@@ -38,7 +38,9 @@ async function loginOwner() {
 
     if (!username || !password) {
 
-        alert("దయచేసి యూజర్ పేరు మరియు పాస్‌వర్డ్ నమోదు చేయండి");
+        alert(
+            "దయచేసి యూజర్ పేరు మరియు పాస్‌వర్డ్ నమోదు చేయండి"
+        );
 
         return;
     }
@@ -47,7 +49,7 @@ async function loginOwner() {
     try {
 
         // =================================================
-        // 1. FIRST CHECK OLD OWNERS COLLECTION
+        // 1. CHECK OLD OWNERS COLLECTION
         // =================================================
 
         const ownerQuery = query(
@@ -62,26 +64,29 @@ async function loginOwner() {
 
         if (!ownerSnapshot.empty) {
 
-            // Get complete document
             const ownerDoc =
                 ownerSnapshot.docs[0];
 
-            // Get document data
             const owner =
                 ownerDoc.data();
 
-            // Unique Owner ID
             const ownerId =
                 ownerDoc.id;
-                console.log("OWNER DOCUMENT ID:", ownerDoc.id);
-console.log("OWNER DATA:", owner);
 
-console.log("ACCOUNT REQUEST DOCUMENT ID:", accountDoc.id);
-console.log("ACCOUNT REQUEST DATA:", account);
+
+            console.log(
+                "OWNER DOCUMENT ID:",
+                ownerId
+            );
+
+            console.log(
+                "OWNER DATA:",
+                owner
+            );
 
 
             // =================================================
-            // CHECK PASSWORD
+            // PASSWORD
             // =================================================
 
             if (
@@ -117,14 +122,14 @@ console.log("ACCOUNT REQUEST DATA:", account);
 
 
             window.location.href =
-                "staff-dashboard.html";
+                "owner-dashboard.html";
 
             return;
         }
 
 
         // =================================================
-        // 2. CHECK NEW ACCOUNT REQUESTS
+        // 2. CHECK ACCOUNT REQUESTS
         // =================================================
 
         const requestQuery = query(
@@ -137,33 +142,62 @@ console.log("ACCOUNT REQUEST DATA:", account);
             await getDocs(requestQuery);
 
 
-        // Username not found anywhere
         if (requestSnapshot.empty) {
 
-            alert("యూజర్ పేరు కనుగొనబడలేదు");
+            alert(
+                "యూజర్ పేరు కనుగొనబడలేదు"
+            );
 
             return;
         }
 
 
-        // Get complete account request document
+        // =================================================
+        // GET ACCOUNT REQUEST
+        // =================================================
+
         const accountDoc =
             requestSnapshot.docs[0];
 
-        // Get document data
         const account =
             accountDoc.data();
 
-        // Unique Owner ID
         const ownerId =
             accountDoc.id;
+
+
+        console.log(
+            "ACCOUNT REQUEST DOCUMENT ID:",
+            ownerId
+        );
+
+        console.log(
+            "ACCOUNT REQUEST DATA:",
+            account
+        );
 
 
         // =================================================
         // 3. CHECK ACCOUNT STATUS
         // =================================================
 
-        if (account.status === "Pending Approval") {
+        const status =
+            String(account.status || "")
+                .trim()
+                .toLowerCase();
+
+
+        console.log(
+            "ACCOUNT STATUS:",
+            status
+        );
+
+
+        // Pending
+        if (
+            status === "pending approval" ||
+            status === "pending"
+        ) {
 
             alert(
                 "⏳ Your account is waiting for Boss approval."
@@ -173,7 +207,11 @@ console.log("ACCOUNT REQUEST DATA:", account);
         }
 
 
-        if (account.status === "తిరస్కరించబడింది") {
+        // Rejected
+        if (
+            status === "rejected" ||
+            status === "తిరస్కరించబడింది"
+        ) {
 
             alert(
                 "❌ Your account has been rejected."
@@ -183,7 +221,15 @@ console.log("ACCOUNT REQUEST DATA:", account);
         }
 
 
-        if (account.status !== "ఆమోదించబడింది") {
+        // =================================================
+        // APPROVED
+        // Accept both English and Telugu
+        // =================================================
+
+        if (
+            status !== "approved" &&
+            status !== "ఆమోదించబడింది"
+        ) {
 
             alert(
                 "Your account is not approved yet."
@@ -202,7 +248,9 @@ console.log("ACCOUNT REQUEST DATA:", account);
             String(account.password) !== String(password)
         ) {
 
-            alert("పాస్‌వర్డ్ తప్పుగా ఉంది");
+            alert(
+                "పాస్‌వర్డ్ తప్పుగా ఉంది"
+            );
 
             return;
         }
@@ -226,7 +274,15 @@ console.log("ACCOUNT REQUEST DATA:", account);
         );
 
 
-        alert("లాగిన్ విజయవంతమైంది");
+        console.log(
+            "OWNER LOGIN SUCCESS:",
+            ownerId
+        );
+
+
+        alert(
+            "లాగిన్ విజయవంతమైంది"
+        );
 
 
         window.location.href =
