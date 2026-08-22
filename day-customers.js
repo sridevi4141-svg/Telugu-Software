@@ -33,11 +33,11 @@ const ownerData = localStorage.getItem("ownerLogin");
 
 if (!ownerData) {
 
-    alert("Owner login session not found. Please login again.");
+    alert("ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.");
 
     window.location.href = "owner-login.html";
 
-    throw new Error("Owner login not found");
+    throw new Error("ఓనర్ లాగిన్ కనుగొనబడలేదు");
 
 }
 
@@ -45,7 +45,7 @@ const owner = JSON.parse(ownerData);
 
 if (!owner || !owner.ownerId) {
 
-    alert("Invalid owner login session. Please login again.");
+    alert("ఓనర్ లాగిన్ సెషన్ తప్పుగా ఉంది. దయచేసి మళ్లీ లాగిన్ చేయండి.");
 
     localStorage.removeItem("ownerLogin");
 
@@ -195,7 +195,7 @@ function displayCustomers(customers) {
 
 
         let locationHTML =
-            "No Location";
+            "లొకేషన్ లేదు";
 
 
         if (location) {
@@ -226,7 +226,7 @@ function displayCustomers(customers) {
         // CUSTOMER PHOTO
         // ==========================================
 
-        let photoHTML = "No Photo";
+        let photoHTML = "ఫోటో లేదు";
 
 
         if (customer.photo) {
@@ -357,7 +357,7 @@ window.addCustomer = function () {
         params.get("day");
 
     const session =
-        params.get("session");
+        params.get("session") || "morning";
 
     window.location.href =
         "add-customer.html?day=" +
@@ -366,14 +366,13 @@ window.addCustomer = function () {
         session;
 };
 
-
 // =================================================
 // DELETE CUSTOMER
 // =================================================
 
 window.deleteCustomer = async function (id) {
 
-    if (!confirm("Delete Customer?")) {
+    if (!confirm("కస్టమర్‌ను తొలగించాలా?")) {
         return;
     }
 
@@ -392,7 +391,7 @@ window.deleteCustomer = async function (id) {
         await deleteDoc(customerRef);
 
 
-        alert("Customer Deleted");
+        alert("కస్టమర్ తొలగించబడింది");
 
 
         // Reload table

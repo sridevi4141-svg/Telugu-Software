@@ -32,7 +32,7 @@ async function createOwner() {
 
     if (!user) {
 
-        alert("Please Sign In first");
+        alert("ముందుగా సైన్ ఇన్ చేయండి");
 
         window.location.href = "auth.html";
 
@@ -43,7 +43,7 @@ async function createOwner() {
     // Validate
     if (name === "" || username === "") {
 
-        alert("Please fill all fields");
+        alert("దయచేసి అన్ని వివరాలు నమోదు చేయండి");
 
         return;
     }

@@ -17,12 +17,12 @@ const ownerData =
 
 if (!ownerData) {
 
-    alert("Owner login session not found");
+    alert("ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు");
 
     window.location.href =
         "owner-login.html";
 
-    throw new Error("Owner login not found");
+    throw new Error("ఓనర్ లాగిన్ కనుగొనబడలేదు");
 }
 
 
@@ -36,7 +36,7 @@ try {
 
     localStorage.removeItem("ownerLogin");
 
-    alert("Invalid Owner Login");
+    alert("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 
     window.location.href =
         "owner-login.html";
@@ -47,14 +47,14 @@ try {
 
 if (!owner || !owner.ownerId) {
 
-    alert("Invalid Owner Login");
+    alert("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 
     localStorage.removeItem("ownerLogin");
 
     window.location.href =
         "owner-login.html";
 
-    throw new Error("Invalid Owner Login");
+    throw new Error("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 }
 
 
@@ -98,7 +98,7 @@ async function loadDailySheets() {
     try {
 
         console.log(
-            "Loading Daily Sheets..."
+            "రోజువారీ షీట్లు లోడ్ అవుతున్నాయి..."
         );
 
         const q = query(
@@ -220,7 +220,7 @@ async function loadDailySheets() {
                     </td>
 
                     <td>
-                        ${data.status || "Completed"}
+                        ${data.status || "పూర్తయింది"}
                     </td>
 
                 </tr>

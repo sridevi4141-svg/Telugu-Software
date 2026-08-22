@@ -23,7 +23,7 @@ async function loginOwner() {
 
     if (!usernameInput || !passwordInput) {
 
-        alert("Login fields not found");
+        alert("లాగిన్ ఫీల్డ్స్ కనుగొనబడలేదు");
 
         return;
     }
@@ -38,7 +38,7 @@ async function loginOwner() {
 
     if (!username || !password) {
 
-        alert("Please enter Username and Password");
+        alert("దయచేసి యూజర్ పేరు మరియు పాస్‌వర్డ్ నమోదు చేయండి");
 
         return;
     }
@@ -89,7 +89,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
                 String(owner.password) !== String(password)
             ) {
 
-                alert("Incorrect Password");
+                alert("పాస్‌వర్డ్ తప్పుగా ఉంది");
 
                 return;
             }
@@ -113,7 +113,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
             );
 
 
-            alert("Login Success");
+            alert("లాగిన్ విజయవంతమైంది");
 
 
             window.location.href =
@@ -140,7 +140,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
         // Username not found anywhere
         if (requestSnapshot.empty) {
 
-            alert("Username not found");
+            alert("యూజర్ పేరు కనుగొనబడలేదు");
 
             return;
         }
@@ -173,7 +173,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
         }
 
 
-        if (account.status === "Rejected") {
+        if (account.status === "తిరస్కరించబడింది") {
 
             alert(
                 "❌ Your account has been rejected."
@@ -183,7 +183,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
         }
 
 
-        if (account.status !== "Approved") {
+        if (account.status !== "ఆమోదించబడింది") {
 
             alert(
                 "Your account is not approved yet."
@@ -202,7 +202,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
             String(account.password) !== String(password)
         ) {
 
-            alert("Incorrect Password");
+            alert("పాస్‌వర్డ్ తప్పుగా ఉంది");
 
             return;
         }
@@ -226,7 +226,7 @@ console.log("ACCOUNT REQUEST DATA:", account);
         );
 
 
-        alert("Login Success");
+        alert("లాగిన్ విజయవంతమైంది");
 
 
         window.location.href =

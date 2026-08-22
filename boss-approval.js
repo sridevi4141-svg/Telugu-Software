@@ -101,7 +101,7 @@ async function loadRequests() {
         );
 
         loading.innerText =
-            "Error loading requests";
+            "అభ్యర్థనలను లోడ్ చేయడంలో లోపం";
 
     }
 
@@ -119,11 +119,11 @@ window.approveAccount = async function (id) {
         await updateDoc(
             doc(db, "accountRequests", id),
             {
-                status: "Approved"
+                status: "ఆమోదించబడింది"
             }
         );
 
-        alert("Account Approved Successfully");
+        alert("ఖాతా విజయవంతంగా ఆమోదించబడింది");
 
         loadRequests();
 
@@ -163,11 +163,11 @@ window.rejectAccount = async function (id) {
         await updateDoc(
             doc(db, "accountRequests", id),
             {
-                status: "Rejected"
+                status: "తిరస్కరించబడింది"
             }
         );
 
-        alert("Account Rejected");
+        alert("ఖాతా తిరస్కరించబడింది");
 
         loadRequests();
 

@@ -15,7 +15,7 @@ const welcomeText =
 if (welcomeText) {
 
     // Default
-    welcomeText.innerText = "Hi 👋";
+    welcomeText.innerText = "నమస్కారం 👋";
 
 
     // Check Owner Login

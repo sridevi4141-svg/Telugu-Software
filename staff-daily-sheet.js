@@ -19,14 +19,14 @@ const ownerData =
 if (!ownerData) {
 
     alert(
-        "Owner login session not found. Please login again."
+        "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి."
     );
 
     window.location.href =
         "owner-login.html";
 
     throw new Error(
-        "Owner login not found"
+        "ఓనర్ లాగిన్ కనుగొనబడలేదు"
     );
 }
 
@@ -41,7 +41,7 @@ try {
 
     localStorage.removeItem("ownerLogin");
 
-    alert("Invalid Owner Login");
+    alert("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 
     window.location.href =
         "owner-login.html";
@@ -52,7 +52,7 @@ try {
 
 if (!owner || !owner.ownerId) {
 
-    alert("Invalid Owner Login");
+    alert("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 
     localStorage.removeItem("ownerLogin");
 
@@ -544,7 +544,7 @@ async function () {
                 // -------------------------------
 
                 status:
-                    "Completed",
+                    "పూర్తయింది",
 
 
                 // -------------------------------
@@ -571,7 +571,7 @@ async function () {
     } catch (error) {
 
         console.error(
-            "Save Daily Sheet Error:",
+            "రోజువారీ షీట్ సేవ్ లోపం:",
             error
         );
 
@@ -603,7 +603,7 @@ async function initPage() {
     } catch (error) {
 
         console.error(
-            "Daily Sheet Load Error:",
+            "రోజువారీ షీట్ లోడ్ లోపం:",
             error
         );
 

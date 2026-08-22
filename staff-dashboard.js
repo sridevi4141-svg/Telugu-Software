@@ -39,7 +39,7 @@ if (!ownerData) {
             (
                 owner.name ||
                 owner.username ||
-                "Owner"
+                "ఓనర్"
             );
 
     }
@@ -73,6 +73,6 @@ function logoutOwner() {
     );
 
     window.location.href =
-        "owner-login.html";
+        "owner-dashboard.html";
 
 }

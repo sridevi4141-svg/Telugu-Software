@@ -15,7 +15,7 @@ const params = new URLSearchParams(window.location.search);
 const customerId = params.get("id");
 
 if (!customerId) {
-    alert("Customer ID Not Found");
+    alert("కస్టమర్ ఐడీ కనుగొనబడలేదు");
     throw new Error("Customer ID Missing");
 }
 
@@ -26,7 +26,7 @@ async function loadCustomer(){
 
     if(!customerId){
 
-        alert("Customer ID Not Found");
+        alert("కస్టమర్ ఐడీ కనుగొనబడలేదు");
 
         return;
 
@@ -116,7 +116,7 @@ window.calculateWeekly = function(){
 // Save Loan
 window.saveLoan = async function () {
 
-    alert("Save Button Clicked");
+    alert("సేవ్ బటన్ నొక్కబడింది");
 
 
     // ==========================================
@@ -130,7 +130,7 @@ window.saveLoan = async function () {
     if (!ownerData) {
 
         alert(
-            "Owner login session not found. Please login again."
+            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి."
         );
 
         window.location.href =
@@ -147,7 +147,7 @@ window.saveLoan = async function () {
     if (!owner || !owner.ownerId) {
 
         alert(
-            "Invalid owner login session. Please login again."
+            "ఓనర్ లాగిన్ సెషన్ తప్పుగా ఉంది. దయచేసి మళ్లీ లాగిన్ చేయండి."
         );
 
         localStorage.removeItem("ownerLogin");
@@ -208,7 +208,7 @@ window.saveLoan = async function () {
     ) {
 
         alert(
-            "Please Fill All Details"
+            "దయచేసి అన్ని వివరాలు నమోదు చేయండి"
         );
 
         return;
@@ -337,7 +337,7 @@ window.saveLoan = async function () {
 
 
         alert(
-            "Save Failed: " +
+            "సేవ్ విఫలమైంది: " +
             error.message
         );
 
@@ -626,7 +626,7 @@ window.saveWeekPayment = async function () {
     if (!ownerData) {
 
         alert(
-            "Owner login session not found. Please login again."
+            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి."
         );
 
         window.location.href =
@@ -643,7 +643,7 @@ window.saveWeekPayment = async function () {
     if (!owner || !owner.ownerId) {
 
         alert(
-            "Invalid Owner Login"
+            "ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి"
         );
 
         localStorage.removeItem(
@@ -805,7 +805,7 @@ window.saveWeekPayment = async function () {
                     new Date(),
 
                 status:
-                    "Paid"
+                    "చెల్లించారు"
 
             }
         );

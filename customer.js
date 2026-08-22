@@ -33,7 +33,7 @@ window.saveCustomer = async function () {
     const ownerData = localStorage.getItem("ownerLogin");
 
     if (!ownerData) {
-        alert("Owner login session not found. Please login again.");
+        alert("ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.");
         window.location.href = "owner-login.html";
         return;
     }
@@ -41,7 +41,7 @@ window.saveCustomer = async function () {
     const owner = JSON.parse(ownerData);
 
     if (!owner || !owner.ownerId) {
-        alert("Invalid owner login session. Please login again.");
+        alert("ఓనర్ లాగిన్ సెషన్ తప్పుగా ఉంది. దయచేసి మళ్లీ లాగిన్ చేయండి.");
         localStorage.removeItem("ownerLogin");
         window.location.href = "owner-login.html";
         return;
@@ -106,7 +106,7 @@ window.saveCustomer = async function () {
         aadhar === ""
     ) {
 
-        alert("Please Fill All Details");
+        alert("దయచేసి అన్ని వివరాలు నమోదు చేయండి");
         return;
 
     }
@@ -185,7 +185,7 @@ window.saveCustomer = async function () {
         // SUCCESS
         // =================================
 
-        alert("Customer Saved Successfully");
+        alert("కస్టమర్ విజయవంతంగా సేవ్ చేయబడింది");
 
         window.location.href =
             "day-customers.html?day=" + day;
@@ -194,12 +194,12 @@ window.saveCustomer = async function () {
     } catch (error) {
 
         console.error(
-            "Customer Save Error:",
+            "కస్టమర్ సేవ్ లోపం:",
             error
         );
 
         alert(
-            "Customer Save Failed: " +
+            "కస్టమర్ సేవ్ విఫలమైంది: " +
             error.message
         );
 
@@ -210,7 +210,7 @@ window.saveCustomer = async function () {
 window.getLocation = async function () {
 
     if (!navigator.geolocation) {
-        alert("Geolocation is not supported");
+        alert("లొకేషన్ సౌకర్యం ఈ బ్రౌజర్‌లో అందుబాటులో లేదు");
         return;
     }
 
@@ -233,7 +233,7 @@ window.getLocation = async function () {
 
             console.log(error);
 
-            alert("Please allow location permission");
+            alert("దయచేసి లొకేషన్ అనుమతి ఇవ్వండి");
 
         },
         {
@@ -273,7 +273,7 @@ function startVoice(inputId) {
     if (!SpeechRecognition) {
         alert(
             "Voice input is not supported in this browser.\n" +
-            "Please use Google Chrome or Microsoft Edge."
+            "దయచేసి Google Chrome లేదా Microsoft Edge ఉపయోగించండి."
         );
         return;
     }
@@ -281,7 +281,7 @@ function startVoice(inputId) {
     const input = document.getElementById(inputId);
 
     if (!input) {
-        alert("Input field not found: " + inputId);
+        alert("ఇన్‌పుట్ ఫీల్డ్ కనుగొనబడలేదు: " + inputId);
         return;
     }
 
@@ -314,8 +314,8 @@ function startVoice(inputId) {
 
         input.placeholder =
             inputId === "customerName"
-                ? "Customer Name"
-                : "Village";
+                ? "కస్టమర్ పేరు"
+                : "గ్రామం";
 
         input.style.border = "1px solid #ccc";
     };
@@ -328,21 +328,21 @@ function startVoice(inputId) {
 
         input.placeholder =
             inputId === "customerName"
-                ? "Customer Name"
-                : "Village";
+                ? "కస్టమర్ పేరు"
+                : "గ్రామం";
 
         if (event.error === "not-allowed") {
 
             alert(
                 "Microphone permission denied.\n\n" +
-                "Please allow Microphone permission for this website."
+                "ఈ వెబ్‌సైట్‌కు మైక్రోఫోన్ అనుమతి ఇవ్వండి."
             );
 
         } else if (event.error === "no-speech") {
 
             alert(
                 "No voice detected.\n\n" +
-                "Please click 🎤 and speak clearly."
+                "🎤 నొక్కి స్పష్టంగా మాట్లాడండి."
             );
 
         } else if (event.error === "audio-capture") {
@@ -362,7 +362,7 @@ function startVoice(inputId) {
         } else {
 
             alert(
-                "Voice input failed: " +
+                "వాయిస్ ఇన్‌పుట్ విఫలమైంది: " +
                 event.error
             );
         }
@@ -383,7 +383,7 @@ function startVoice(inputId) {
 
         console.log("Recognition start error:", error);
 
-        alert("Unable to start microphone. Please try again.");
+        alert("మైక్రోఫోన్ ప్రారంభం కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.");
     }
 }
 

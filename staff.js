@@ -26,7 +26,7 @@ function getOwnerId() {
 
     if (!ownerLogin) {
 
-        alert("Please Login as Owner");
+        alert("దయచేసి ఓనర్‌గా లాగిన్ చేయండి");
 
         window.location.href =
             "owner-login.html";
@@ -67,7 +67,7 @@ window.saveStaff = async function () {
         password == ""
     ) {
 
-        alert("Please Fill All Details");
+        alert("దయచేసి అన్ని వివరాలు నమోదు చేయండి");
 
         return;
     }
@@ -105,7 +105,7 @@ window.saveStaff = async function () {
         );
 
 
-        alert("Staff Updated Successfully");
+        alert("స్టాఫ్ వివరాలు విజయవంతంగా మార్చబడ్డాయి");
 
         editId = null;
 
@@ -135,7 +135,7 @@ window.saveStaff = async function () {
         );
 
 
-        alert("Staff Saved Successfully");
+        alert("స్టాఫ్ విజయవంతంగా సేవ్ చేయబడింది");
 
     }
 
@@ -240,7 +240,7 @@ async function loadStaff() {
 
 window.deleteStaff = async function (id) {
 
-    if (confirm("Delete Staff?")) {
+    if (confirm("స్టాఫ్‌ను తొలగించాలా?")) {
 
         await deleteDoc(
             doc(db, "staff", id)

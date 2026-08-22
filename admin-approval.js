@@ -101,7 +101,7 @@ async function loadAccountRequests() {
             card.innerHTML = `
 
                 <h3>
-                    ${escapeHtml(data.name || "No Name")}
+                    ${escapeHtml(data.name || "పేరు లేదు")}
                 </h3>
 
 
@@ -268,7 +268,7 @@ async function approveRequest(requestId) {
             requestRef,
             {
 
-                status: "Approved",
+                status: "ఆమోదించబడింది",
 
                 approvedAt: new Date()
 
@@ -335,7 +335,7 @@ async function rejectRequest(requestId) {
             requestRef,
             {
 
-                status: "Rejected",
+                status: "తిరస్కరించబడింది",
 
                 rejectedAt: new Date()
 

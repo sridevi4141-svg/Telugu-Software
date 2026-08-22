@@ -18,12 +18,12 @@ const ownerData =
 
 if (!ownerData) {
 
-    alert("Owner login not found");
+    alert("ఓనర్ లాగిన్ కనుగొనబడలేదు");
 
     window.location.href =
         "owner-login.html";
 
-    throw new Error("Owner login not found");
+    throw new Error("ఓనర్ లాగిన్ కనుగొనబడలేదు");
 
 }
 
@@ -34,7 +34,7 @@ const owner =
 
 if (!owner || !owner.ownerId) {
 
-    alert("Invalid Owner Login");
+    alert("ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి");
 
     localStorage.removeItem("ownerLogin");
 
@@ -111,7 +111,7 @@ function getDates(){
 
     if(!from || !to){
 
-        alert("Please select From Date and To Date");
+        alert("దయచేసి ప్రారంభ తేదీ మరియు ముగింపు తేదీ ఎంచుకోండి");
 
         return null;
 
@@ -209,13 +209,13 @@ async function(){
 
                     rows.push({
 
-                        "Date":
+                        "తేదీ":
                             data.date || "",
 
-                        "Owner":
+                        "ఓనర్":
                             data.ownerName || "",
 
-                        "Opening Cash":
+                        "ప్రారంభ నగదు":
                             Number(
                                 data.openingCash || 0
                             ),
@@ -230,20 +230,20 @@ async function(){
                                 data.totalCollection || 0
                             ),
 
-                        "Expenses":
+                        "ఖర్చులు":
                             Number(
                                 data.expenses || 0
                             ),
 
-                        "Closing Cash":
+                        "ముగింపు నగదు":
                             Number(
                                 data.closingCash || 0
                             ),
 
-                        "Notes":
+                        "గమనికలు":
                             data.notes || "",
 
-                        "Status":
+                        "స్థితి":
                             data.status || ""
 
                     });
@@ -278,7 +278,7 @@ async function(){
         XLSX.utils.book_append_sheet(
             workbook,
             worksheet,
-            "Daily Sheet"
+            "రోజువారీ షీట్"
         );
 
 
@@ -461,26 +461,26 @@ async function(){
 
                 rows.push({
 
-                    "Date":
+                    "తేదీ":
                         paymentDate,
 
                     "Serial No":
                         serialNo,
 
-                    "Customer Name":
+                    "కస్టమర్ పేరు":
                         customerName,
 
-                    "Week":
+                    "వారం":
                         Number(
                             data.week || 0
                         ),
 
-                    "Amount":
+                    "మొత్తం":
                         Number(
                             data.amount || 0
                         ),
 
-                    "Status":
+                    "స్థితి":
                         data.status || ""
 
                 });
@@ -514,7 +514,7 @@ async function(){
         XLSX.utils.book_append_sheet(
             workbook,
             worksheet,
-            "Collection"
+            "వసూళ్లు"
         );
 
 
@@ -606,13 +606,13 @@ async function(){
 
                     rows.push({
 
-                        "Date":
+                        "తేదీ":
                             loanDate,
 
                         "Serial No":
                             data.serialNo || "",
 
-                        "Customer Name":
+                        "కస్టమర్ పేరు":
                             data.customerName || "",
 
                         "Loan Amount":
@@ -620,7 +620,7 @@ async function(){
                                 data.loanAmount || 0
                             ),
 
-                        "Staff":
+                        "స్టాఫ్":
                             data.staffUser || ""
 
                     });

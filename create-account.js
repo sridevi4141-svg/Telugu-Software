@@ -58,7 +58,7 @@ form.addEventListener("submit", async function (e) {
 
     if (password !== confirmPassword) {
 
-        alert("Passwords do not match");
+        alert("పాస్‌వర్డ్‌లు సరిపోలడం లేదు");
 
         return;
     }
@@ -82,7 +82,7 @@ form.addEventListener("submit", async function (e) {
 
         if (!snapshot.empty) {
 
-            alert("Username already exists");
+            alert("ఈ యూజర్ పేరు ఇప్పటికే ఉంది");
 
             return;
         }

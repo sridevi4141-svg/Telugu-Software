@@ -28,7 +28,7 @@ messaging.onBackgroundMessage((payload) => {
 
     const notificationTitle =
         payload.notification?.title ||
-        "Finance Software";
+        "ఫైనాన్స్ సాఫ్ట్‌వేర్";
 
     const notificationOptions = {
         body:
