@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="te">
 
 <head>
 
@@ -233,10 +233,13 @@ body{
     padding:12px;
 
 }
+
 button:disabled{
-    background: #4CAF50;
-    color: white;
-    cursor: not-allowed;
+
+    background:#4CAF50;
+    color:white;
+    cursor:not-allowed;
+
 }
 
 .payment-table td{
@@ -272,91 +275,6 @@ button:disabled{
 
 }
 
-.loan-summary{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    margin:20px 0;
-}
-
-.summary-card{
-    padding:18px;
-    border-radius:12px;
-    text-align:center;
-    color:white;
-}
-
-.paid-card{
-    background:#28a745;
-}
-
-.balance-card{
-    background:#dc3545;
-}
-
-.summary-card h4{
-    margin:0;
-    font-size:16px;
-}
-
-.summary-card h2{
-    margin:10px 0 0;
-    font-size:28px;
-}
-
-/* =========================================
-   COLLECTION OPTIONS
-========================================= */
-
-.collection-options {
-
-    display: flex;
-
-    gap: 12px;
-
-    margin: 20px 0;
-
-    flex-wrap: wrap;
-
-}
-
-
-.collection-btn {
-
-    padding: 12px 22px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #eeeeee;
-
-    color: #333;
-
-    font-size: 16px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-}
-
-
-.collection-btn.active {
-
-    background: #1565c0;
-
-    color: white;
-
-}
-
-
-.collection-section {
-
-    width: 100%;
-
-}
-
 @media(max-width:768px){
 
 .payment-table{
@@ -374,7 +292,6 @@ button:disabled{
 
 }
 
-
 </style>
 
 </head>
@@ -383,17 +300,23 @@ button:disabled{
 
 <div class="container">
 
+<!-- వెనక్కి వెళ్లే బటన్ -->
+
 <button
 class="back-btn"
 onclick="history.back()">
 
-⬅ Back
+⬅ వెనక్కి
 
 </button>
 
+
+<!-- కస్టమర్ ప్రొఫైల్ -->
+
 <div class="profile">
 
-<img id="customerPhoto"
+<img
+id="customerPhoto"
 src="user.png">
 
 <h2 id="customerName">
@@ -408,283 +331,147 @@ src="user.png">
 
 </p>
 
-
-
 </div>
+
+
+<!-- లోన్ వివరాలు -->
 
 <div class="loan-card">
 
-    <h3>💰 Loan Details</h3>
-
-    <label>మొత్తం</label>
-
-    <input
-        type="number"
-        id="amount"
-        placeholder="Total Loan Amount">
+<h3>💰 రుణ వివరాలు</h3>
 
 
-    <label>చెల్లించాల్సిన మొత్తం</label>
+<label>రుణ మొత్తం</label>
 
-    <input
-        type="number"
-        id="toPay"
-        oninput="calculatePayments()"
-        placeholder="Remaining Amount">
+<input
+type="number"
+id="amount">
 
 
-    <label>వారాల సంఖ్య</label>
+<label>చెల్లించాల్సిన మొత్తం</label>
 
-    <input
-        type="number"
-        id="weeks"
-        oninput="calculatePayments()"
-        placeholder="Number of Weeks">
-
-
-    <label>వారానికి చెల్లింపు</label>
-
-    <input
-        type="number"
-        id="weeklyPayment"
-        readonly>
+<input
+type="number"
+id="toPay"
+oninput="calculateWeekly()">
 
 
-    <label>నెలకు చెల్లింపు</label>
+<label>వారాల సంఖ్య</label>
 
-    <input
-        type="number"
-        id="monthlyPayment"
-        placeholder="Monthly Payment">
-
-
-    <label>రోజుకు చెల్లింపు</label>
-
-    <input
-        type="number"
-        id="dailyPayment"
-        placeholder="Daily Payment">
+<input
+type="number"
+id="weeks"
+oninput="calculateWeekly()">
 
 
-    <button
-        class="save-btn"
-        onclick="saveLoan()">
+<label>వారానికి చెల్లించాల్సిన మొత్తం</label>
 
-        Save Loan Details
+<input
+type="number"
+id="weeklyPayment"
+readonly>
 
-    </button>
 
-</div>
- <div class="loan-summary">
+<button
+class="save-btn"
+onclick="saveLoan()">
 
-    <div class="summary-card paid-card">
+రుణ వివరాలను సేవ్ చేయండి
 
-        <h4>కట్టిన మొత్తం</h4>
-
-        <h2 id="paidAmountTotal">
-            ₹0
-        </h2>
-
-    </div>
-
-    <div class="summary-card balance-card">
-
-        <h4>మిగిలిన బ్యాలెన్స్</h4>
-
-        <h2 id="remainingBalance">
-            ₹0
-        </h2>
-
-    </div>
+</button>
 
 </div>
 
-<!-- ========================================= -->
-<!-- COLLECTION TYPE OPTIONS -->
-<!-- ========================================= -->
 
-<div class="collection-options">
+<!-- వారపు వసూళ్లు -->
 
-    <button
-        id="weeklyBtn"
-        class="collection-btn active"
-        onclick="showCollection('weekly')">
-
-        📅 Weekly
-
-    </button>
+<h3>📅 వారపు వసూళ్లు</h3>
 
 
-    <button
-        id="monthlyBtn"
-        class="collection-btn"
-        onclick="showCollection('monthly')">
+<table class="payment-table">
 
-        🗓️ Monthly
+<thead>
 
-    </button>
+<tr>
+
+<th>వారం</th>
+
+<th>మొత్తం</th>
+
+<th>తేదీ</th>
+
+<th>స్థితి</th>
+
+<th>చర్య</th>
+
+</tr>
+
+</thead>
 
 
-    <button
-        id="dailyBtn"
-        class="collection-btn"
-        onclick="showCollection('daily')">
+<tbody id="paymentTable">
 
-        📆 Daily
+</tbody>
 
-    </button>
+</table>
 
-</div>
 
-<!-- ========================================= -->
-<!-- WEEKLY COLLECTION -->
-<!-- ========================================= -->
+<!-- చెల్లింపు Popup -->
 
 <div
-    id="weeklyCollection"
-    class="collection-section">
+id="paymentPopup"
+class="popup">
 
-    <h3>📅 Weekly Collection</h3>
+<div class="popup-content">
 
-    <table class="payment-table">
+<h3 id="weekTitle">
 
-        <thead>
+వారం
 
-            <tr>
-                <th>వారం</th>
-                <th>మొత్తం</th>
-                <th>తేదీ</th>
-                <th>స్థితి</th>
-                <th>చర్య</th>
-            </tr>
+</h3>
 
-        </thead>
 
-        <tbody id="paymentTable"></tbody>
+<label>
 
-    </table>
+అందుకున్న మొత్తం
 
-</div>
-<<div
-    id="monthlyCollection"
-    class="collection-section"
-    style="display:none;">
+</label>
 
-    <h3>🗓️ Monthly Collection</h3>
 
-    <table class="payment-table">
+<input
+type="number"
+id="paidAmount">
 
-        <thead>
 
-            <tr>
-                <th>నెల</th>
-                <th>మొత్తం</th>
-                <th>తేదీ</th>
-                <th>స్థితి</th>
-                <th>చర్య</th>
-            </tr>
+<button
+class="save-btn"
+onclick="saveWeekPayment()">
 
-        </thead>
+చెల్లింపును సేవ్ చేయండి
 
-        <tbody id="monthlyPaymentTable"></tbody>
+</button>
 
-    </table>
+
+<button
+class="cancel-btn"
+onclick="closePopup()">
+
+రద్దు చేయండి
+
+</button>
 
 </div>
 
-<!-- ========================================= -->
-<!-- DAILY COLLECTION -->
-<!-- ========================================= -->
-
-<div
-    id="dailyCollection"
-    class="collection-section"
-    style="display:none;">
-
-    <h3>📆 Daily Collection</h3>
-
-    <table class="payment-table">
-
-        <thead>
-
-            <tr>
-                <th>రోజు</th>
-                <th>మొత్తం</th>
-                <th>తేదీ</th>
-                <th>స్థితి</th>
-                <th>చర్య</th>
-            </tr>
-
-        </thead>
-
-        <tbody id="dailyPaymentTable"></tbody>
-
-    </table>
-
-</div>
-<!-- ========================================= -->
-<!-- PAYMENT POPUP -->
-<!-- ========================================= -->
-
-<div
-    id="paymentPopup"
-    class="popup">
-
-    <div class="popup-content">
-
-        <h3 id="paymentTitle">
-            Payment
-        </h3>
-
-
-        <!-- Payment Type -->
-        <input
-            type="hidden"
-            id="paymentType">
-
-
-        <!-- Week / Month / Day -->
-        <input
-            type="hidden"
-            id="paymentPeriod">
-
-
-        <label>
-            Received Amount
-        </label>
-
-        <input
-            type="number"
-            id="paidAmount"
-            placeholder="Enter Amount"
-            min="1"
-            step="0.01">
-
-
-        <button
-            class="save-btn"
-            onclick="savePayment()">
-
-            💰 Save Payment
-
-        </button>
-
-
-        <button
-            class="cancel-btn"
-            onclick="closePopup()">
-
-            రద్దు చేయండి
-
-        </button>
-
-    </div>
-
-</div>
 </div>
 
-<script type="module"
-src="customer-details.js"></script>
+</div>
+
+
+<script
+type="module"
+src="customer-details.js">
+
+</script>
 
 </body>
 
