@@ -10,205 +10,249 @@ import {
     query,
     where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-// Customer ID
-const params = new URLSearchParams(window.location.search);
-const customerId = params.get("id");
+
+
+// =====================================================
+// CUSTOMER ID
+// =====================================================
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const customerId =
+    params.get("id");
 
 if (!customerId) {
+
     alert("కస్టమర్ ఐడీ కనుగొనబడలేదు");
+
     throw new Error("Customer ID Missing");
+
 }
 
-let weeksRenderId = 0;
+
+// =====================================================
+// GLOBAL VARIABLES
+// =====================================================
+
 let selectedWeek = 0;
+let selectedMonth = 0;
+let selectedDay = 0;
 
-let selectedCollectionType = "weekly";
-let selectedCollectionNumber = 0;
+let selectedPaymentType = "";
 
-// Load Customer
-// ==========================================
+
+// =====================================================
 // LOAD CUSTOMER
-// ==========================================
+// =====================================================
 
 async function loadCustomer() {
-
-    if (!customerId) {
-        alert("కస్టమర్ ఐడీ కనుగొనబడలేదు");
-        return;
-    }
 
     try {
 
         const customerRef =
-            doc(db, "customers", customerId);
+            doc(
+                db,
+                "customers",
+                customerId
+            );
 
         const customerSnap =
             await getDoc(customerRef);
 
+
         if (!customerSnap.exists()) {
 
             alert("Customer Not Found");
-            return;
 
+            return;
         }
+
 
         const data =
             customerSnap.data();
 
-        console.log("CUSTOMER DATA:", data);
+
+        console.log(
+            "CUSTOMER DATA:",
+            data
+        );
 
 
-        // ======================================
-        // CUSTOMER BASIC DETAILS
-        // ======================================
+        // =================================================
+        // CUSTOMER DETAILS
+        // =================================================
 
-        document.getElementById("customerName").innerHTML =
-            data.customerName || "";
+        const customerName =
+            document.getElementById(
+                "customerName"
+            );
 
-        document.getElementById("customerVillage").innerHTML =
-            data.village || "";
+        const customerVillage =
+            document.getElementById(
+                "customerVillage"
+            );
 
 
-        // ======================================
-        // CUSTOMER PHOTO
-        // ======================================
+        if (customerName) {
 
-        if (data.photo) {
-
-            const photo =
-                document.getElementById("customerPhoto");
-
-            if (photo) {
-                photo.src = data.photo;
-            }
+            customerName.innerText =
+                data.customerName || "";
 
         }
 
 
-        // ======================================
+        if (customerVillage) {
+
+            customerVillage.innerText =
+                data.village || "";
+
+        }
+
+
+        // =================================================
+        // PHOTO
+        // =================================================
+
+        const customerPhoto =
+            document.getElementById(
+                "customerPhoto"
+            );
+
+
+        if (
+            customerPhoto &&
+            data.photo
+        ) {
+
+            customerPhoto.src =
+                data.photo;
+
+        }
+
+
+        // =================================================
         // LOAN DETAILS
-        // ======================================
+        // =================================================
+
+        const amount =
+            Number(
+                data.amount || 0
+            );
+
+        const toPay =
+            Number(
+                data.toPay || 0
+            );
+
+        const weeks =
+            Number(
+                data.weeks || 0
+            );
+
+        const weeklyPayment =
+            Number(
+                data.weeklyPayment || 0
+            );
+
+        const monthlyPayment =
+            Number(
+                data.monthlyPayment || 0
+            );
+
+        const dailyPayment =
+            Number(
+                data.dailyPayment || 0
+            );
+
+
+        // =================================================
+        // SET INPUT VALUES
+        // =================================================
 
         const amountInput =
-            document.getElementById("amount");
+            document.getElementById(
+                "amount"
+            );
 
         const toPayInput =
-            document.getElementById("toPay");
+            document.getElementById(
+                "toPay"
+            );
 
         const weeksInput =
-            document.getElementById("weeks");
+            document.getElementById(
+                "weeks"
+            );
 
         const weeklyInput =
-            document.getElementById("weeklyPayment");
-
-
-        // ======================================
-        // CHECK WHETHER LOAN EXISTS
-        // ======================================
-
-        const loanAmount =
-            Number(data.amount || 0);
-
-        const remainingAmount =
-            Number(data.toPay || 0);
-
-        const totalWeeks =
-            Number(data.weeks || 0);
-
-        const weeklyAmount =
-            Number(data.weeklyPayment || 0);
-
-
-        // ======================================
-        // FRESH CUSTOMER / NO LOAN
-        // ======================================
-
-        if (
-            loanAmount <= 0 ||
-            totalWeeks <= 0
-        ) {
-
-            if (amountInput)
-                amountInput.value = "";
-
-            if (toPayInput)
-                toPayInput.value = "";
-
-            if (weeksInput)
-                weeksInput.value = "";
-
-            if (weeklyInput)
-                weeklyInput.value = "";
-
-
-            // Clear weekly table
-            const tbody =
-                document.getElementById("paymentTable");
-
-            if (tbody) {
-                tbody.innerHTML = "";
-            }
-
-            console.log(
-                "No existing loan. Fresh loan can be created."
+            document.getElementById(
+                "weeklyPayment"
             );
 
-            return;
-        }
+        const monthlyInput =
+            document.getElementById(
+                "monthlyPayment"
+            );
 
+        const dailyInput =
+            document.getElementById(
+                "dailyPayment"
+            );
 
-        // ======================================
-        // EXISTING LOAN
-        // ======================================
 
         if (amountInput)
-            amountInput.value = loanAmount;
+            amountInput.value =
+                amount || "";
+
 
         if (toPayInput)
-            toPayInput.value = remainingAmount;
+            toPayInput.value =
+                toPay || "";
+
 
         if (weeksInput)
-            weeksInput.value = totalWeeks;
+            weeksInput.value =
+                weeks || "";
+
 
         if (weeklyInput)
-            weeklyInput.value = weeklyAmount;
+            weeklyInput.value =
+                weeklyPayment || "";
 
 
-        console.log(
-            "Existing Loan:",
-            loanAmount
+        if (monthlyInput)
+            monthlyInput.value =
+                monthlyPayment || "";
+
+
+        if (dailyInput)
+            dailyInput.value =
+                dailyPayment || "";
+
+
+        // =================================================
+        // UPDATE SUMMARY
+        // =================================================
+
+        updateSummary(
+            amount,
+            toPay
         );
 
-        console.log(
-            "Remaining Balance:",
-            remainingAmount
+
+        // =================================================
+        // LOAD ALL COLLECTION TABLES
+        // =================================================
+
+        await createWeeks(
+            weeks
         );
 
-        console.log(
-            "Total Weeks:",
-            totalWeeks
-        );
+        await createMonthlyPayments();
 
-        console.log(
-            "Weekly Payment:",
-            weeklyAmount
-        );
+        await createDailyPayments();
 
-
-        // ======================================
-        // LOAD WEEKLY PAYMENT TABLE
-        // ======================================
-
-        if (
-            totalWeeks > 0 &&
-            weeklyAmount > 0
-        ) {
-
-            await createWeeks(
-                totalWeeks
-            );
-
-        }
 
     } catch (error) {
 
@@ -226,635 +270,61 @@ async function loadCustomer() {
 
 }
 
+
 loadCustomer();
 
-function updateLoanSummary(totalLoan, totalPaid) {
+// =====================================================
+// UPDATE SUMMARY - ACTUAL PAYMENTS FROM FIRESTORE
+// =====================================================
 
-    totalLoan = Number(totalLoan || 0);
-    totalPaid = Number(totalPaid || 0);
-
-    const remaining =
-        Math.max(0, totalLoan - totalPaid);
-
-    document.getElementById("paidAmountTotal").innerText =
-        "₹" + totalPaid.toLocaleString("en-IN");
-
-    document.getElementById("remainingBalance").innerText =
-        "₹" + remaining.toLocaleString("en-IN");
-}
-
-// Weekly Payment Auto
-window.calculateWeekly = function(){
-
-    const toPay =
-    Number(document.getElementById("toPay").value);
-
-    const weeks =
-    Number(document.getElementById("weeks").value);
-
-    if(toPay>0 && weeks>0){
-
-        document.getElementById("weeklyPayment").value =
-        (toPay/weeks).toFixed(2);
-
-        createWeeks(weeks);
-
-    }
-
-}
-
-
-// Save Loan
-window.saveLoan = async function () {
-
-    alert("సేవ్ బటన్ నొక్కబడింది");
-
-
-    // ==========================================
-    // OWNER LOGIN
-    // ==========================================
-
-    const ownerData =
-        localStorage.getItem("ownerLogin");
-
-
-    if (!ownerData) {
-
-        alert(
-            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి."
-        );
-
-        window.location.href =
-            "owner-login.html";
-
-        return;
-    }
-
-
-    const owner =
-        JSON.parse(ownerData);
-
-
-    if (!owner || !owner.ownerId) {
-
-        alert(
-            "ఓనర్ లాగిన్ సెషన్ తప్పుగా ఉంది. దయచేసి మళ్లీ లాగిన్ చేయండి."
-        );
-
-        localStorage.removeItem("ownerLogin");
-
-        window.location.href =
-            "owner-login.html";
-
-        return;
-    }
-
-
-    const ownerId =
-        owner.ownerId;
-
-
-    console.log(
-        "CURRENT OWNER ID:",
-        ownerId
-    );
-
-
-    // ==========================================
-    // LOAN DETAILS
-    // ==========================================
-
-    const amount =
-        Number(
-            document.getElementById("amount").value
-        );
-
-
-    const toPay =
-        Number(
-            document.getElementById("toPay").value
-        );
-
-
-    const weeks =
-        Number(
-            document.getElementById("weeks").value
-        );
-
-
-    const weeklyPayment =
-        Number(
-            document.getElementById("weeklyPayment").value
-        );
-
-
-    // ==========================================
-    // VALIDATION
-    // ==========================================
-
-    if (
-        amount <= 0 ||
-        toPay <= 0 ||
-        weeks <= 0
-    ) {
-
-        alert(
-            "దయచేసి అన్ని వివరాలు నమోదు చేయండి"
-        );
-
-        return;
-    }
-
+async function updateSummary() {
 
     try {
 
+        const payments = await getCustomerPayments();
 
-        // ======================================
-        // CUSTOMER DOCUMENT
-        // ======================================
+        // ---------------------------------------------
+        // TOTAL ACTUAL PAID
+        // Weekly + Monthly + Daily
+        // ---------------------------------------------
 
-        const customerRef =
-            doc(
-                db,
-                "customers",
-                customerId
-            );
+        let totalPaid = 0;
 
+        payments.forEach(payment => {
 
-        // ======================================
-        // UPDATE CUSTOMER WITH LOAN DETAILS
-        // ======================================
-
-        await updateDoc(
-            customerRef,
-            {
-
-                amount: amount,
-
-                toPay: toPay,
-
-                weeks: weeks,
-
-                weeklyPayment: weeklyPayment
-
-            }
-        );
-
-
-        // ======================================
-        // GET CUSTOMER
-        // ======================================
-
-        const customerSnap =
-            await getDoc(
-                customerRef
-            );
-
-
-        if (!customerSnap.exists()) {
-
-            alert(
-                "Customer not found"
-            );
-
-            return;
-        }
-
-
-        const customer =
-            customerSnap.data();
-
-
-        // ======================================
-        // SAVE DAILY LOAN
-        // ======================================
-
-        await addDoc(
-            collection(
-                db,
-                "dailyLoans"
-            ),
-            {
-
-                ownerId: ownerId,
-
-                customerId: customerId,
-
-                serialNo:
-                    customer.serialNo || "",
-
-                customerName:
-                    customer.customerName || "",
-
-                loanAmount:
-                    Number(amount),
-
-                toPay:
-                    Number(toPay),
-
-                weeks:
-                    Number(weeks),
-
-                weeklyPayment:
-                    Number(weeklyPayment),
-
-                date:
-                    new Date()
-                        .toISOString()
-                        .split("T")[0],
-
-                createdDate:
-                    new Date()
-
-            }
-        );
-
-
-        // ======================================
-        // SUCCESS
-        // ======================================
-
-        alert(
-            "Loan Details Saved Successfully"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Loan Save Error:",
-            error
-        );
-
-
-        alert(
-            "సేవ్ విఫలమైంది: " +
-            error.message
-        );
-
-    }
-
-};// Create Week Cards
-// =====================================
-// =====================================
-// CREATE WEEKLY PAYMENT TABLE
-// =====================================
-
-async function createWeeks(totalWeeks) {
-
-    const tbody = document.getElementById("paymentTable");
-
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    const weekly =
-        Number(document.getElementById("weeklyPayment")?.value) || 0;
-
-    const originalAmount =
-        Number(document.getElementById("amount")?.value) || 0;
-
-    const currentBalance =
-        Number(document.getElementById("toPay")?.value) || 0;
-
-    if (totalWeeks <= 0 || weekly <= 0) {
-
-        document.getElementById("paidAmountTotal").innerText = "₹0";
-        document.getElementById("remainingBalance").innerText =
-            "₹" + currentBalance.toLocaleString("en-IN");
-
-        return;
-    }
-
-    try {
-
-        // =====================================
-        // GET CUSTOMER PAYMENTS
-        // =====================================
-
-        const q = query(
-            collection(db, "payments"),
-            where("customerId", "==", customerId)
-        );
-
-        const paymentSnap = await getDocs(q);
-
-        // =====================================
-        // STORE WEEK PAYMENTS
-        // =====================================
-
-        const paidWeeks = {};
-        const paymentDates = {};
-
-        let actualPaymentsTotal = 0;
-
-        paymentSnap.forEach((docSnap) => {
-
-            const payment = docSnap.data();
-
-            const week =
-                Number(payment.week || 0);
-
-            const amount =
-                Number(payment.amount || 0);
-
-            if (week <= 0 || amount <= 0) {
-                return;
-            }
-
-            // Add payment to that week
-            if (!paidWeeks[week]) {
-                paidWeeks[week] = 0;
-            }
-
-            paidWeeks[week] += amount;
-
-            actualPaymentsTotal += amount;
-
-            // =================================
-            // PAYMENT DATE
-            // =================================
-
-            if (payment.paymentDate) {
-
-                let date;
-
-                if (
-                    payment.paymentDate.seconds !== undefined
-                ) {
-
-                    date = new Date(
-                        payment.paymentDate.seconds * 1000
-                    );
-
-                } else {
-
-                    date = new Date(
-                        payment.paymentDate
-                    );
-
-                }
-
-                paymentDates[week] =
-                    date.toLocaleDateString("en-IN");
-
-            }
+            totalPaid += Number(payment.amount || 0);
 
         });
 
 
-        // =====================================
-        // OLD CUSTOMER SUPPORT
-        // =====================================
+        // ---------------------------------------------
+        // CURRENT LOAN AMOUNT
+        // ---------------------------------------------
 
-        const totalPaidFromLoan =
-            Math.max(
-                originalAmount - currentBalance,
-                0
-            );
+        const amount =
+            Number(
+                document.getElementById("amount")?.value
+            ) || 0;
 
 
-        // If there are NO payment documents,
-        // calculate old paid amount from balance
+        // ---------------------------------------------
+        // CURRENT BALANCE
+        // ---------------------------------------------
 
-        if (
-            actualPaymentsTotal === 0 &&
-            totalPaidFromLoan > 0
-        ) {
+        const balance =
+            Number(
+                document.getElementById("toPay")?.value
+            ) || 0;
 
-            let oldPaid =
-                totalPaidFromLoan;
 
-            for (
-                let week = 1;
-                week <= totalWeeks;
-                week++
-            ) {
-
-                if (oldPaid >= weekly) {
-
-                    paidWeeks[week] = weekly;
-
-                    oldPaid -= weekly;
-
-                }
-                else if (oldPaid > 0) {
-
-                    paidWeeks[week] = oldPaid;
-
-                    oldPaid = 0;
-
-                }
-                else {
-
-                    paidWeeks[week] = 0;
-
-                }
-
-            }
-
-        }
-
-
-        // =====================================
-        // CREATE WEEK ROWS
-        // =====================================
-
-        for (
-            let i = 1;
-            i <= totalWeeks;
-            i++
-        ) {
-
-            const paidAmount =
-                Number(paidWeeks[i] || 0);
-
-            const remainingAmount =
-                Math.max(
-                    weekly - paidAmount,
-                    0
-                );
-
-            const paymentDate =
-                paymentDates[i] || "-";
-
-
-            // =================================
-            // FULLY PAID
-            // =================================
-
-            if (paidAmount >= weekly) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${i}
-                        </td>
-
-                        <td>
-                            ₹${paidAmount.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            ${paymentDate}
-                        </td>
-
-                        <td class="paid">
-                            ✅ Paid
-                        </td>
-
-                        <td>
-
-                            <button
-                                disabled
-                                style="
-                                    background:#4CAF50;
-                                    color:white;
-                                    border:none;
-                                    padding:6px 12px;
-                                    border-radius:5px;
-                                "
-                            >
-                                Paid
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-
-            // =================================
-            // PARTIAL PAYMENT
-            // =================================
-
-            else if (paidAmount > 0) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${i}
-                        </td>
-
-                        <td>
-
-                            ₹${paidAmount.toLocaleString("en-IN")}
-                            /
-                            ₹${weekly.toLocaleString("en-IN")}
-
-                            <br>
-
-                            <small style="color:red;">
-                                Balance:
-                                ₹${remainingAmount.toLocaleString("en-IN")}
-                            </small>
-
-                        </td>
-
-                        <td>
-                            ${paymentDate}
-                        </td>
-
-                        <td class="pending">
-                            🟠 Partial
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openWeek(
-                                        ${i},
-                                        ${remainingAmount}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-
-            // =================================
-            // PENDING
-            // =================================
-
-            else {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${i}
-                        </td>
-
-                        <td>
-                            ₹${weekly.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            -
-                        </td>
-
-                        <td class="pending">
-                            🟠 Pending
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openWeek(
-                                        ${i},
-                                        ${weekly}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-        }
-
-
-        // =====================================
-        // UPDATE SUMMARY
-        // =====================================
-
-        const totalPaid =
-            Math.max(
-                originalAmount - currentBalance,
-                0
-            );
+        // ---------------------------------------------
+        // DISPLAY PAID
+        // ---------------------------------------------
 
         const paidDisplay =
-            document.getElementById("paidAmountTotal");
-
-        const balanceDisplay =
-            document.getElementById("remainingBalance");
+            document.getElementById(
+                "paidAmountTotal"
+            );
 
 
         if (paidDisplay) {
@@ -866,142 +336,134 @@ async function createWeeks(totalWeeks) {
         }
 
 
+        // ---------------------------------------------
+        // DISPLAY BALANCE
+        // ---------------------------------------------
+
+        const balanceDisplay =
+            document.getElementById(
+                "remainingBalance"
+            );
+
+
         if (balanceDisplay) {
 
             balanceDisplay.innerText =
                 "₹" +
-                currentBalance.toLocaleString("en-IN");
+                balance.toLocaleString("en-IN");
 
         }
 
 
-        console.log("Weekly table updated");
-        console.log("Payments found:", actualPaymentsTotal);
-        console.log("Paid weeks:", paidWeeks);
+        console.log(
+            "================================"
+        );
+
+        console.log(
+            "Loan Amount:",
+            amount
+        );
+
+        console.log(
+            "Actual Total Paid:",
+            totalPaid
+        );
+
+        console.log(
+            "Current Balance:",
+            balance
+        );
+
+        console.log(
+            "================================"
+        );
 
     }
-    catch (error) {
+    catch(error) {
 
         console.error(
-            "createWeeks Error:",
+            "Summary Error:",
             error
         );
 
     }
 
-}// =========================================
-// OPEN PAYMENT POPUP
-// WEEKLY / MONTHLY / DAILY
-// =========================================
-
-window.openCollection = function(
-    type,
-    number,
-    remainingAmount
-) {
-
-    selectedCollectionType = type;
-
-    selectedCollectionNumber = number;
-
-    selectedWeek = number;
-
-
-    const title =
-        document.getElementById("weekTitle");
-
-
-    if (title) {
-
-        if (type === "weekly") {
-
-            title.innerHTML =
-                "📅 Week " + number;
-
-        }
-
-        else if (type === "monthly") {
-
-            title.innerHTML =
-                "🗓️ Month " + number;
-
-        }
-
-        else if (type === "daily") {
-
-            title.innerHTML =
-                "📆 Day " + number;
-
-        }
-
-    }
-
-
-    const amountInput =
-        document.getElementById("paidAmount");
-
-
-    if (amountInput) {
-
-        amountInput.value =
-            remainingAmount || "";
-
-    }
-
-
-    const popup =
-        document.getElementById("paymentPopup");
-
-
-    if (popup) {
-
-        popup.style.display =
-            "block";
-
-    }
-
-};
-
-
-// OLD WEEKLY SUPPORT
-window.openWeek = function(
-    week,
-    remainingAmount
-) {
-
-    openCollection(
-        "weekly",
-        week,
-        remainingAmount
-    );
-
-};
-window.closePopup=function(){
-
-    document.getElementById("paymentPopup").style.display=
-    "none";
-
 }
 
-// =====================================
-// Save Week Payment
-// Supports ₹400, ₹500, ₹700, ₹1000 etc.
-// =====================================
 
-window.saveWeekPayment = async function () {
+// =====================================================
+// CALCULATE PAYMENTS
+// =====================================================
 
-    // ==========================================
-    // OWNER LOGIN
-    // ==========================================
+window.calculatePayments = function () {
+
+    const toPay =
+        Number(
+            document.getElementById(
+                "toPay"
+            )?.value
+        ) || 0;
+
+
+    const weeks =
+        Number(
+            document.getElementById(
+                "weeks"
+            )?.value
+        ) || 0;
+
+
+    const weeklyInput =
+        document.getElementById(
+            "weeklyPayment"
+        );
+
+
+    if (
+        toPay > 0 &&
+        weeks > 0
+    ) {
+
+        const weekly =
+            toPay / weeks;
+
+
+        if (weeklyInput) {
+
+            weeklyInput.value =
+                weekly.toFixed(2);
+
+        }
+
+    }
+
+};
+
+
+// =====================================================
+// OLD FUNCTION SUPPORT
+// =====================================================
+
+window.calculateWeekly =
+    window.calculatePayments;
+
+
+// =====================================================
+// SAVE LOAN
+// =====================================================
+
+window.saveLoan = async function () {
 
     const ownerData =
-        localStorage.getItem("ownerLogin");
+        localStorage.getItem(
+            "ownerLogin"
+        );
 
 
     if (!ownerData) {
 
         alert(
-            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి."
+            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు"
         );
 
         window.location.href =
@@ -1011,22 +473,33 @@ window.saveWeekPayment = async function () {
     }
 
 
-    const owner =
-        JSON.parse(ownerData);
+    let owner;
 
+    try {
 
-    if (!owner || !owner.ownerId) {
+        owner =
+            JSON.parse(
+                ownerData
+            );
+
+    } catch (error) {
 
         alert(
-            "ఓనర్ లాగిన్ వివరాలు తప్పుగా ఉన్నాయి"
+            "Owner Login Invalid"
         );
 
-        localStorage.removeItem(
-            "ownerLogin"
-        );
+        return;
+    }
 
-        window.location.href =
-            "owner-login.html";
+
+    if (
+        !owner ||
+        !owner.ownerId
+    ) {
+
+        alert(
+            "Owner Login Invalid"
+        );
 
         return;
     }
@@ -1036,28 +509,61 @@ window.saveWeekPayment = async function () {
         owner.ownerId;
 
 
-    console.log(
-        "PAYMENT OWNER ID:",
-        ownerId
-    );
-
-
-    // ==========================================
-    // PAID AMOUNT
-    // ==========================================
-
-    const paidAmount =
+    const amount =
         Number(
             document.getElementById(
-                "paidAmount"
-            ).value
+                "amount"
+            )?.value
         ) || 0;
 
 
-    if (paidAmount <= 0) {
+    const toPay =
+        Number(
+            document.getElementById(
+                "toPay"
+            )?.value
+        ) || 0;
+
+
+    const weeks =
+        Number(
+            document.getElementById(
+                "weeks"
+            )?.value
+        ) || 0;
+
+
+    const weeklyPayment =
+        Number(
+            document.getElementById(
+                "weeklyPayment"
+            )?.value
+        ) || 0;
+
+
+    const monthlyPayment =
+        Number(
+            document.getElementById(
+                "monthlyPayment"
+            )?.value
+        ) || 0;
+
+
+    const dailyPayment =
+        Number(
+            document.getElementById(
+                "dailyPayment"
+            )?.value
+        ) || 0;
+
+
+    if (
+        amount <= 0 ||
+        toPay <= 0
+    ) {
 
         alert(
-            "Enter Amount"
+            "దయచేసి Loan Amount మరియు Remaining Amount నమోదు చేయండి"
         );
 
         return;
@@ -1066,10 +572,6 @@ window.saveWeekPayment = async function () {
 
     try {
 
-        // ======================================
-        // GET CUSTOMER
-        // ======================================
-
         const customerRef =
             doc(
                 db,
@@ -1077,6 +579,10 @@ window.saveWeekPayment = async function () {
                 customerId
             );
 
+
+        // =================================================
+        // CHECK CUSTOMER
+        // =================================================
 
         const customerSnap =
             await getDoc(
@@ -1098,9 +604,1344 @@ window.saveWeekPayment = async function () {
             customerSnap.data();
 
 
-        // ======================================
-        // CHECK CUSTOMER OWNER
-        // ======================================
+        // =================================================
+        // OWNER CHECK
+        // =================================================
+
+        if (
+            customer.ownerId &&
+            customer.ownerId !== ownerId
+        ) {
+
+            alert(
+                "You cannot modify this customer."
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // UPDATE CUSTOMER
+        // =================================================
+
+        await updateDoc(
+            customerRef,
+            {
+
+                amount:
+                    amount,
+
+                toPay:
+                    toPay,
+
+                weeks:
+                    weeks,
+
+                weeklyPayment:
+                    weeklyPayment,
+
+                monthlyPayment:
+                    monthlyPayment,
+
+                dailyPayment:
+                    dailyPayment,
+
+                ownerId:
+                    ownerId
+
+            }
+        );
+
+
+        // =================================================
+        // SAVE LOAN HISTORY
+        // =================================================
+
+        await addDoc(
+            collection(
+                db,
+                "dailyLoans"
+            ),
+            {
+
+                ownerId:
+                    ownerId,
+
+                customerId:
+                    customerId,
+
+                serialNo:
+                    customer.serialNo || "",
+
+                customerName:
+                    customer.customerName || "",
+
+                loanAmount:
+                    amount,
+
+                toPay:
+                    toPay,
+
+                weeks:
+                    weeks,
+
+                weeklyPayment:
+                    weeklyPayment,
+
+                monthlyPayment:
+                    monthlyPayment,
+
+                dailyPayment:
+                    dailyPayment,
+
+                date:
+                    new Date()
+                        .toISOString()
+                        .split("T")[0],
+
+                createdDate:
+                    new Date()
+
+            }
+        );
+
+
+        alert(
+            "Loan Details Saved Successfully"
+        );
+
+
+        await loadCustomer();
+
+
+    } catch (error) {
+
+        console.error(
+            "Save Loan Error:",
+            error
+        );
+
+        alert(
+            "Loan Save Failed: " +
+            error.message
+        );
+
+    }
+
+};
+
+
+// =====================================================
+// GET ALL PAYMENTS
+// =====================================================
+
+async function getCustomerPayments() {
+
+    const q =
+        query(
+            collection(
+                db,
+                "payments"
+            ),
+            where(
+                "customerId",
+                "==",
+                customerId
+            )
+        );
+
+
+    const snap =
+        await getDocs(q);
+
+
+    const payments = [];
+
+
+    snap.forEach(
+        docSnap => {
+
+            payments.push({
+                id:
+                    docSnap.id,
+                ...docSnap.data()
+            });
+
+        }
+    );
+
+
+    return payments;
+
+}
+
+
+// =====================================================
+// FORMAT DATE
+// =====================================================
+
+function formatDate(value) {
+
+    if (!value)
+        return "-";
+
+
+    try {
+
+        if (
+            value.seconds
+        ) {
+
+            return new Date(
+                value.seconds * 1000
+            ).toLocaleDateString(
+                "en-IN"
+            );
+
+        }
+
+
+        return new Date(
+            value
+        ).toLocaleDateString(
+            "en-IN"
+        );
+
+    } catch {
+
+        return "-";
+
+    }
+
+}
+
+
+// =====================================================
+// CREATE WEEKLY TABLE
+// =====================================================
+
+async function createWeeks(
+    totalWeeks
+) {
+
+    const tbody =
+        document.getElementById(
+            "paymentTable"
+        );
+
+
+    if (!tbody)
+        return;
+
+
+    tbody.innerHTML = "";
+
+
+    const weekly =
+        Number(
+            document.getElementById(
+                "weeklyPayment"
+            )?.value
+        ) || 0;
+
+
+    const loanAmount =
+        Number(
+            document.getElementById(
+                "amount"
+            )?.value
+        ) || 0;
+
+
+    const balance =
+        Number(
+            document.getElementById(
+                "toPay"
+            )?.value
+        ) || 0;
+
+
+    if (
+        totalWeeks <= 0 ||
+        weekly <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const payments =
+            await getCustomerPayments();
+
+
+        const weeklyPayments = {};
+
+
+        payments.forEach(
+            payment => {
+
+                if (
+                    payment.paymentType ===
+                    "weekly" ||
+                    payment.week
+                ) {
+
+                    const week =
+                        Number(
+                            payment.week || 0
+                        );
+
+
+                    if (week > 0) {
+
+                        weeklyPayments[week] =
+                            (
+                                weeklyPayments[week] ||
+                                0
+                            ) +
+                            Number(
+                                payment.amount || 0
+                            );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        // =================================================
+        // OLD LOAN SUPPORT
+        // =================================================
+
+        const actualPaid =
+            Math.max(
+                loanAmount -
+                balance,
+                0
+            );
+
+
+        let oldPaid =
+            actualPaid;
+
+
+        for (
+            let i = 1;
+            i <= totalWeeks;
+            i++
+        ) {
+
+            if (
+                weeklyPayments[i] ===
+                undefined &&
+                oldPaid > 0
+            ) {
+
+                const amount =
+                    Math.min(
+                        weekly,
+                        oldPaid
+                    );
+
+
+                weeklyPayments[i] =
+                    amount;
+
+
+                oldPaid -=
+                    amount;
+
+            }
+
+        }
+
+
+        // =================================================
+        // CREATE ROWS
+        // =================================================
+
+        for (
+            let i = 1;
+            i <= totalWeeks;
+            i++
+        ) {
+
+            const paid =
+                Number(
+                    weeklyPayments[i] || 0
+                );
+
+
+            const remaining =
+                Math.max(
+                    weekly -
+                    paid,
+                    0
+                );
+
+
+            let status = "";
+            let action = "";
+
+
+            if (
+                paid >= weekly
+            ) {
+
+                status =
+                    `<span class="paid">✅ Paid</span>`;
+
+                action =
+                    `<button disabled>Paid</button>`;
+
+            }
+
+            else if (
+                paid > 0
+            ) {
+
+                status =
+                    `<span class="pending">🟠 Partial</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'weekly',
+                            ${i},
+                            ${remaining}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+            else {
+
+                status =
+                    `<span class="pending">🟠 Pending</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'weekly',
+                            ${i},
+                            ${weekly}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        Week ${i}
+                    </td>
+
+                    <td>
+
+                        ₹${paid.toLocaleString("en-IN")}
+
+                        ${
+                            paid > 0 &&
+                            paid < weekly
+                            ?
+                            `<br>
+                             <small>
+                             Balance ₹${remaining.toLocaleString("en-IN")}
+                             </small>`
+                            :
+                            ""
+                        }
+
+                    </td>
+
+                    <td>
+                        ${getPaymentDate(
+                            payments,
+                            "weekly",
+                            i
+                        )}
+                    </td>
+
+                    <td>
+                        ${status}
+                    </td>
+
+                    <td>
+                        ${action}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        updateSummary(
+            loanAmount,
+            balance
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "createWeeks Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// PAYMENT DATE
+// =====================================================
+
+function getPaymentDate(
+    payments,
+    type,
+    period
+) {
+
+    const payment =
+        payments
+            .filter(
+                p =>
+                    (
+                        p.paymentType === type ||
+                        (
+                            type === "weekly" &&
+                            p.week
+                        )
+                    ) &&
+                    Number(
+                        p.week ||
+                        p.month ||
+                        p.day
+                    ) === Number(period)
+            )
+            .sort(
+                (a, b) =>
+                    getTime(b.paymentDate) -
+                    getTime(a.paymentDate)
+            )[0];
+
+
+    if (!payment)
+        return "-";
+
+
+    return formatDate(
+        payment.paymentDate
+    );
+
+}
+
+
+function getTime(value) {
+
+    if (!value)
+        return 0;
+
+
+    if (value.seconds)
+        return value.seconds * 1000;
+
+
+    return new Date(value).getTime();
+
+}
+
+
+// =====================================================
+// CREATE MONTHLY TABLE
+// =====================================================
+
+async function createMonthlyPayments() {
+
+    const tbody =
+        document.getElementById(
+            "monthlyPaymentTable"
+        );
+
+
+    if (!tbody)
+        return;
+
+
+    tbody.innerHTML = "";
+
+
+    const monthly =
+        Number(
+            document.getElementById(
+                "monthlyPayment"
+            )?.value
+        ) || 0;
+
+
+    if (monthly <= 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Monthly payment not set
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const payments =
+            await getCustomerPayments();
+
+
+        const monthlyPayments = {};
+
+
+        payments.forEach(
+            payment => {
+
+                if (
+                    payment.paymentType ===
+                    "monthly"
+                ) {
+
+                    const month =
+                        Number(
+                            payment.month || 0
+                        );
+
+
+                    if (month > 0) {
+
+                        monthlyPayments[month] =
+                            (
+                                monthlyPayments[month] ||
+                                0
+                            ) +
+                            Number(
+                                payment.amount || 0
+                            );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        // 12 months
+
+        for (
+            let month = 1;
+            month <= 12;
+            month++
+        ) {
+
+            const paid =
+                Number(
+                    monthlyPayments[month] ||
+                    0
+                );
+
+
+            const remaining =
+                Math.max(
+                    monthly -
+                    paid,
+                    0
+                );
+
+
+            let status;
+            let action;
+
+
+            if (
+                paid >= monthly
+            ) {
+
+                status =
+                    `<span class="paid">✅ Paid</span>`;
+
+                action =
+                    `<button disabled>Paid</button>`;
+
+            }
+
+            else if (
+                paid > 0
+            ) {
+
+                status =
+                    `<span class="pending">🟠 Partial</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'monthly',
+                            ${month},
+                            ${remaining}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+            else {
+
+                status =
+                    `<span class="pending">🟠 Pending</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'monthly',
+                            ${month},
+                            ${monthly}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        Month ${month}
+                    </td>
+
+                    <td>
+                        ₹${paid.toLocaleString("en-IN")}
+                    </td>
+
+                    <td>
+                        ${getPaymentDate(
+                            payments,
+                            "monthly",
+                            month
+                        )}
+                    </td>
+
+                    <td>
+                        ${status}
+                    </td>
+
+                    <td>
+                        ${action}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Monthly Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// CREATE DAILY TABLE
+// =====================================================
+
+async function createDailyPayments() {
+
+    const tbody =
+        document.getElementById(
+            "dailyPaymentTable"
+        );
+
+
+    if (!tbody)
+        return;
+
+
+    tbody.innerHTML = "";
+
+
+    const daily =
+        Number(
+            document.getElementById(
+                "dailyPayment"
+            )?.value
+        ) || 0;
+
+
+    if (daily <= 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Daily payment not set
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const payments =
+            await getCustomerPayments();
+
+
+        const today =
+            new Date();
+
+
+        const daysInMonth =
+            new Date(
+                today.getFullYear(),
+                today.getMonth() + 1,
+                0
+            ).getDate();
+
+
+        const dailyPayments = {};
+
+
+        payments.forEach(
+            payment => {
+
+                if (
+                    payment.paymentType ===
+                    "daily"
+                ) {
+
+                    const day =
+                        Number(
+                            payment.day || 0
+                        );
+
+
+                    if (day > 0) {
+
+                        dailyPayments[day] =
+                            (
+                                dailyPayments[day] ||
+                                0
+                            ) +
+                            Number(
+                                payment.amount || 0
+                            );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        for (
+            let day = 1;
+            day <= daysInMonth;
+            day++
+        ) {
+
+            const paid =
+                Number(
+                    dailyPayments[day] ||
+                    0
+                );
+
+
+            const remaining =
+                Math.max(
+                    daily -
+                    paid,
+                    0
+                );
+
+
+            let status;
+            let action;
+
+
+            if (
+                paid >= daily
+            ) {
+
+                status =
+                    `<span class="paid">✅ Paid</span>`;
+
+                action =
+                    `<button disabled>Paid</button>`;
+
+            }
+
+            else if (
+                paid > 0
+            ) {
+
+                status =
+                    `<span class="pending">🟠 Partial</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'daily',
+                            ${day},
+                            ${remaining}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+            else {
+
+                status =
+                    `<span class="pending">🟠 Pending</span>`;
+
+                action = `
+                    <button
+                        class="pay-btn"
+                        onclick="openPayment(
+                            'daily',
+                            ${day},
+                            ${daily}
+                        )">
+                        Pay
+                    </button>
+                `;
+
+            }
+
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        Day ${day}
+                    </td>
+
+                    <td>
+                        ₹${paid.toLocaleString("en-IN")}
+                    </td>
+
+                    <td>
+                        ${getPaymentDate(
+                            payments,
+                            "daily",
+                            day
+                        )}
+                    </td>
+
+                    <td>
+                        ${status}
+                    </td>
+
+                    <td>
+                        ${action}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Daily Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// OPEN PAYMENT POPUP
+// =====================================================
+
+window.openPayment =
+function (
+    type,
+    period,
+    amount
+) {
+
+    selectedPaymentType =
+        type;
+
+
+    if (type === "weekly") {
+
+        selectedWeek =
+            Number(period);
+
+        selectedMonth = 0;
+        selectedDay = 0;
+
+    }
+
+
+    if (type === "monthly") {
+
+        selectedMonth =
+            Number(period);
+
+        selectedWeek = 0;
+        selectedDay = 0;
+
+    }
+
+
+    if (type === "daily") {
+
+        selectedDay =
+            Number(period);
+
+        selectedWeek = 0;
+        selectedMonth = 0;
+
+    }
+
+
+    const title =
+        document.getElementById(
+            "paymentTitle"
+        );
+
+
+    if (title) {
+
+        if (type === "weekly") {
+
+            title.innerText =
+                "📅 Week " + period;
+
+        }
+
+        else if (
+            type === "monthly"
+        ) {
+
+            title.innerText =
+                "🗓️ Month " + period;
+
+        }
+
+        else {
+
+            title.innerText =
+                "📆 Day " + period;
+
+        }
+
+    }
+
+
+    const paymentType =
+        document.getElementById(
+            "paymentType"
+        );
+
+
+    const paymentPeriod =
+        document.getElementById(
+            "paymentPeriod"
+        );
+
+
+    if (paymentType)
+        paymentType.value =
+            type;
+
+
+    if (paymentPeriod)
+        paymentPeriod.value =
+            period;
+
+
+    const paidAmount =
+        document.getElementById(
+            "paidAmount"
+        );
+
+
+    if (paidAmount) {
+
+        paidAmount.value =
+            amount || "";
+
+    }
+
+
+    const popup =
+        document.getElementById(
+            "paymentPopup"
+        );
+
+
+    if (popup) {
+
+        popup.style.display =
+            "block";
+
+    }
+
+};
+
+
+// =====================================================
+// OLD openWeek SUPPORT
+// =====================================================
+
+window.openWeek =
+function (
+    week,
+    amount
+) {
+
+    openPayment(
+        "weekly",
+        week,
+        amount
+    );
+
+};
+
+
+// =====================================================
+// CLOSE POPUP
+// =====================================================
+
+window.closePopup =
+function () {
+
+    const popup =
+        document.getElementById(
+            "paymentPopup"
+        );
+
+
+    if (popup) {
+
+        popup.style.display =
+            "none";
+
+    }
+
+};
+
+
+// =====================================================
+// SAVE PAYMENT
+// WEEKLY + MONTHLY + DAILY
+// =====================================================
+
+window.savePayment =
+async function () {
+
+    // =================================================
+    // OWNER LOGIN
+    // =================================================
+
+    const ownerData =
+        localStorage.getItem(
+            "ownerLogin"
+        );
+
+
+    if (!ownerData) {
+
+        alert(
+            "ఓనర్ లాగిన్ సెషన్ కనుగొనబడలేదు"
+        );
+
+        window.location.href =
+            "owner-login.html";
+
+        return;
+    }
+
+
+    let owner;
+
+    try {
+
+        owner =
+            JSON.parse(
+                ownerData
+            );
+
+    } catch {
+
+        alert(
+            "Owner Login Invalid"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !owner ||
+        !owner.ownerId
+    ) {
+
+        alert(
+            "Owner Login Invalid"
+        );
+
+        return;
+
+    }
+
+
+    const ownerId =
+        owner.ownerId;
+
+
+    // =================================================
+    // PAYMENT AMOUNT
+    // =================================================
+
+    const paidAmount =
+        Number(
+            document.getElementById(
+                "paidAmount"
+            )?.value
+        ) || 0;
+
+
+    if (
+        paidAmount <= 0
+    ) {
+
+        alert(
+            "Enter Amount"
+        );
+
+        return;
+
+    }
+
+
+    // =================================================
+    // PAYMENT TYPE
+    // =================================================
+
+    const paymentType =
+        document.getElementById(
+            "paymentType"
+        )?.value;
+
+
+    const paymentPeriod =
+        Number(
+            document.getElementById(
+                "paymentPeriod"
+            )?.value
+        ) || 0;
+
+
+    if (
+        !paymentType ||
+        paymentPeriod <= 0
+    ) {
+
+        alert(
+            "Payment period not selected"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        // =================================================
+        // CUSTOMER
+        // =================================================
+
+        const customerRef =
+            doc(
+                db,
+                "customers",
+                customerId
+            );
+
+
+        const customerSnap =
+            await getDoc(
+                customerRef
+            );
+
+
+        if (
+            !customerSnap.exists()
+        ) {
+
+            alert(
+                "Customer Not Found"
+            );
+
+            return;
+
+        }
+
+
+        const customer =
+            customerSnap.data();
+
+
+        // =================================================
+        // OWNER CHECK
+        // =================================================
 
         if (
             customer.ownerId &&
@@ -1112,12 +1953,13 @@ window.saveWeekPayment = async function () {
             );
 
             return;
+
         }
 
 
-        // ======================================
+        // =================================================
         // CURRENT BALANCE
-        // ======================================
+        // =================================================
 
         const currentBalance =
             Number(
@@ -1125,9 +1967,9 @@ window.saveWeekPayment = async function () {
             );
 
 
-        // ======================================
-        // CHECK BALANCE
-        // ======================================
+        // =================================================
+        // BALANCE CHECK
+        // =================================================
 
         if (
             paidAmount >
@@ -1135,73 +1977,104 @@ window.saveWeekPayment = async function () {
         ) {
 
             alert(
-                "Payment cannot be greater than remaining balance ₹"
-                + currentBalance
+                "Payment cannot be greater than remaining balance ₹" +
+                currentBalance.toLocaleString(
+                    "en-IN"
+                )
             );
 
             return;
+
         }
 
 
-        // ======================================
-        // SELECTED WEEK
-        // ======================================
+        // =================================================
+        // PAYMENT DATA
+        // =================================================
 
-        const weekNumber =
-            Number(
-                selectedWeek
-            ) || 1;
+        const paymentData = {
+
+            ownerId:
+                ownerId,
+
+            customerId:
+                customerId,
+
+            paymentType:
+                paymentType,
+
+            amount:
+                paidAmount,
+
+            paymentDate:
+                new Date(),
+
+            status:
+                "చెల్లించారు"
+
+        };
 
 
-        // ======================================
+        // =================================================
+        // SAVE PERIOD
+        // =================================================
+
+        if (
+            paymentType ===
+            "weekly"
+        ) {
+
+            paymentData.week =
+                paymentPeriod;
+
+        }
+
+
+        if (
+            paymentType ===
+            "monthly"
+        ) {
+
+            paymentData.month =
+                paymentPeriod;
+
+        }
+
+
+        if (
+            paymentType ===
+            "daily"
+        ) {
+
+            paymentData.day =
+                paymentPeriod;
+
+        }
+
+
+        // =================================================
         // SAVE PAYMENT
-        // ======================================
+        // =================================================
 
         await addDoc(
             collection(
                 db,
                 "payments"
             ),
-            {
-
-                ownerId:
-                    ownerId,
-
-                customerId:
-                    customerId,
-
-                paymentType:
-    selectedCollectionType,
-
-periodNumber:
-    selectedCollectionNumber,
-
-// Weekly compatibility
-week:
-    selectedCollectionType === "weekly"
-        ? selectedCollectionNumber
-        : 0,
-
-amount:
-    paidAmount,
-
-                paymentDate:
-                    new Date(),
-
-                status:
-                    "చెల్లించారు"
-
-            }
+            paymentData
         );
 
 
-        // ======================================
-        // UPDATE CUSTOMER BALANCE
-        // ======================================
+        // =================================================
+        // UPDATE BALANCE
+        // =================================================
 
         const newBalance =
-            currentBalance -
-            paidAmount;
+            Math.max(
+                currentBalance -
+                paidAmount,
+                0
+            );
 
 
         await updateDoc(
@@ -1215,77 +2088,86 @@ amount:
         );
 
 
-        // ======================================
-        // UPDATE BALANCE TEXTBOX
-        // ======================================
+        // =================================================
+        // UPDATE INPUT
+        // =================================================
 
-        const toPayElement =
+        const toPayInput =
             document.getElementById(
                 "toPay"
             );
 
 
-        if (toPayElement) {
+        if (toPayInput) {
 
-            toPayElement.value =
+            toPayInput.value =
                 newBalance;
 
         }
 
 
-        // ======================================
-        // CLEAR PAYMENT INPUT
-        // ======================================
+        // =================================================
+        // CLOSE POPUP
+        // =================================================
 
-        document.getElementById(
-            "paidAmount"
-        ).value = "";
+        const paidInput =
+            document.getElementById(
+                "paidAmount"
+            );
 
 
-        // ======================================
+        if (paidInput) {
+
+            paidInput.value =
+                "";
+
+        }
+
+
+        closePopup();
+
+
+        // =================================================
         // SUCCESS
-        // ======================================
+        // =================================================
 
         alert(
             "Payment Saved Successfully"
         );
 
 
-        closePopup();
-
-
-        // ======================================
-        // RELOAD CUSTOMER
-        // ======================================
-
-        await loadCustomer();
-
-
-        // ======================================
-        // RELOAD WEEKLY TABLE
-        // ======================================
-
-        const weeksElement =
-            document.getElementById(
-                "weeks"
-            );
-
-
-        const totalWeeks =
-            weeksElement
-                ? Number(weeksElement.value) || 0
-                : 0;
-
+        // =================================================
+        // REFRESH EVERYTHING
+        // =================================================
 
         await createWeeks(
-            totalWeeks
+            Number(
+                document.getElementById(
+                    "weeks"
+                )?.value
+            ) || 0
+        );
+
+
+        await createMonthlyPayments();
+
+        await createDailyPayments();
+
+
+        updateSummary(
+            Number(
+                document.getElementById(
+                    "amount"
+                )?.value
+            ) || 0,
+            newBalance
         );
 
 
     } catch (error) {
 
         console.error(
-            "Payment Error:",
+            "Payment Save Error:",
             error
         );
 
@@ -1299,678 +2181,130 @@ amount:
 
 };
 
-// =========================================
-// COLLECTION TYPE SWITCH
-// =========================================
 
-// =========================================
-// COLLECTION TYPE SWITCH
-// WEEKLY / MONTHLY / DAILY
-// =========================================
+// =====================================================
+// OLD saveWeekPayment SUPPORT
+// =====================================================
 
-window.showCollection = async function(type) {
+window.saveWeekPayment =
+async function () {
+
+    await savePayment();
+
+};
+
+
+// =====================================================
+// COLLECTION SWITCH
+// =====================================================
+
+window.showCollection =
+function (type) {
 
     const weekly =
-        document.getElementById("weeklyCollection");
+        document.getElementById(
+            "weeklyCollection"
+        );
 
     const monthly =
-        document.getElementById("monthlyCollection");
+        document.getElementById(
+            "monthlyCollection"
+        );
 
     const daily =
-        document.getElementById("dailyCollection");
+        document.getElementById(
+            "dailyCollection"
+        );
 
-    // Hide all
-    if (weekly) weekly.style.display = "none";
-    if (monthly) monthly.style.display = "none";
-    if (daily) daily.style.display = "none";
 
-    // Remove active
+    if (weekly)
+        weekly.style.display =
+            "none";
+
+
+    if (monthly)
+        monthly.style.display =
+            "none";
+
+
+    if (daily)
+        daily.style.display =
+            "none";
+
+
+    // =================================================
+    // BUTTONS
+    // =================================================
+
     document
-        .querySelectorAll(".collection-btn")
-        .forEach(btn => {
-            btn.classList.remove("active");
-        });
+        .querySelectorAll(
+            ".collection-btn"
+        )
+        .forEach(
+            btn =>
+                btn.classList.remove(
+                    "active"
+                )
+        );
 
-    selectedCollectionType = type;
 
-    // =====================================
-    // WEEKLY
-    // =====================================
-
-    if (type === "weekly") {
+    if (
+        type === "weekly"
+    ) {
 
         if (weekly)
-            weekly.style.display = "block";
+            weekly.style.display =
+                "block";
+
 
         document
-            .querySelectorAll(".collection-btn")[0]
-            ?.classList.add("active");
+            .getElementById(
+                "weeklyBtn"
+            )
+            ?.classList.add(
+                "active"
+            );
 
-        const weeks =
-            Number(
-                document.getElementById("weeks")?.value
-            ) || 0;
-
-        if (weeks > 0) {
-            await createWeeks(weeks);
-        }
     }
 
-    // =====================================
-    // MONTHLY
-    // =====================================
 
-    if (type === "monthly") {
+    if (
+        type === "monthly"
+    ) {
 
         if (monthly)
-            monthly.style.display = "block";
+            monthly.style.display =
+                "block";
+
 
         document
-            .querySelectorAll(".collection-btn")[1]
-            ?.classList.add("active");
+            .getElementById(
+                "monthlyBtn"
+            )
+            ?.classList.add(
+                "active"
+            );
 
-        await createMonths();
     }
 
-    // =====================================
-    // DAILY
-    // =====================================
 
-    if (type === "daily") {
+    if (
+        type === "daily"
+    ) {
 
         if (daily)
-            daily.style.display = "block";
+            daily.style.display =
+                "block";
+
 
         document
-            .querySelectorAll(".collection-btn")[2]
-            ?.classList.add("active");
+            .getElementById(
+                "dailyBtn"
+            )
+            ?.classList.add(
+                "active"
+            );
 
-        await createDays();
     }
 
 };
-// =========================================
-// CREATE MONTHLY COLLECTION
-// =========================================
-
-async function createMonths() {
-
-    const tbody =
-        document.getElementById("monthlyPaymentTable");
-
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    const currentBalance =
-        Number(
-            document.getElementById("toPay")?.value
-        ) || 0;
-
-    const originalAmount =
-        Number(
-            document.getElementById("amount")?.value
-        ) || 0;
-
-    const monthlyAmount =
-        Number(
-            document.getElementById("monthlyPayment")?.value
-        ) || 0;
-
-
-    try {
-
-        const q = query(
-            collection(db, "payments"),
-            where("customerId", "==", customerId),
-            where("paymentType", "==", "monthly")
-        );
-
-        const snap =
-            await getDocs(q);
-
-
-        const payments = {};
-
-        const dates = {};
-
-
-        snap.forEach(docSnap => {
-
-            const data =
-                docSnap.data();
-
-            const month =
-                Number(data.periodNumber || 0);
-
-            const amount =
-                Number(data.amount || 0);
-
-            if (month > 0) {
-
-                payments[month] =
-                    (payments[month] || 0) + amount;
-
-                if (data.paymentDate) {
-
-                    let date;
-
-                    if (data.paymentDate.seconds) {
-
-                        date = new Date(
-                            data.paymentDate.seconds * 1000
-                        );
-
-                    } else {
-
-                        date = new Date(
-                            data.paymentDate
-                        );
-
-                    }
-
-                    dates[month] =
-                        date.toLocaleDateString("en-IN");
-                }
-            }
-
-        });
-
-
-        // =====================================
-        // CALCULATE MONTHS
-        // =====================================
-
-        let months = 12;
-
-        const loanAmount =
-            originalAmount;
-
-        if (loanAmount > 0) {
-
-            const calculatedMonthly =
-                monthlyAmount > 0
-                    ? monthlyAmount
-                    : loanAmount / 12;
-
-        }
-
-
-        // =====================================
-        // CREATE 12 MONTHS
-        // =====================================
-
-        for (let i = 1; i <= months; i++) {
-
-            const paid =
-                Number(payments[i] || 0);
-
-            const amount =
-                monthlyAmount > 0
-                    ? monthlyAmount
-                    : loanAmount / 12;
-
-            const remaining =
-                Math.max(amount - paid, 0);
-
-            const date =
-                dates[i] || "-";
-
-
-            // FULLY PAID
-            if (paid >= amount && amount > 0) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Month ${i}
-                        </td>
-
-                        <td>
-                            ₹${paid.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            ${date}
-                        </td>
-
-                        <td class="paid">
-                            ✅ Paid
-                        </td>
-
-                        <td>
-
-                            <button
-                                disabled
-                                style="
-                                    background:green;
-                                    color:white;
-                                    border:none;
-                                    padding:6px 12px;
-                                    border-radius:5px;
-                                "
-                            >
-                                Paid
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-            // PARTIAL
-            else if (paid > 0) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Month ${i}
-                        </td>
-
-                        <td>
-
-                            ₹${paid.toLocaleString("en-IN")}
-                            /
-                            ₹${amount.toLocaleString("en-IN")}
-
-                            <br>
-
-                            <small style="color:red">
-                                Balance:
-                                ₹${remaining.toLocaleString("en-IN")}
-                            </small>
-
-                        </td>
-
-                        <td>
-                            ${date}
-                        </td>
-
-                        <td class="pending">
-                            🟠 Partial
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openCollection(
-                                        'monthly',
-                                        ${i},
-                                        ${remaining}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-            // PENDING
-            else {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Month ${i}
-                        </td>
-
-                        <td>
-                            ₹${amount.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            -
-                        </td>
-
-                        <td class="pending">
-                            🟠 Pending
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openCollection(
-                                        'monthly',
-                                        ${i},
-                                        ${amount}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Monthly Collection Error:",
-            error
-        );
-
-    }
-
-}
-
-// =========================================
-// CREATE DAILY COLLECTION
-// =========================================
-
-async function createDays() {
-
-    const tbody =
-        document.getElementById("dailyPaymentTable");
-
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-
-    const currentBalance =
-        Number(
-            document.getElementById("toPay")?.value
-        ) || 0;
-
-    const originalAmount =
-        Number(
-            document.getElementById("amount")?.value
-        ) || 0;
-
-
-    try {
-
-        const q = query(
-            collection(db, "payments"),
-            where("customerId", "==", customerId),
-            where("paymentType", "==", "daily")
-        );
-
-        const snap =
-            await getDocs(q);
-
-
-        const payments = {};
-
-        const dates = {};
-
-
-        snap.forEach(docSnap => {
-
-            const data =
-                docSnap.data();
-
-            const day =
-                Number(data.periodNumber || 0);
-
-            const amount =
-                Number(data.amount || 0);
-
-            if (day > 0) {
-
-                payments[day] =
-                    (payments[day] || 0) + amount;
-
-                if (data.paymentDate) {
-
-                    let date;
-
-                    if (data.paymentDate.seconds) {
-
-                        date =
-                            new Date(
-                                data.paymentDate.seconds * 1000
-                            );
-
-                    } else {
-
-                        date =
-                            new Date(
-                                data.paymentDate
-                            );
-
-                    }
-
-                    dates[day] =
-                        date.toLocaleDateString("en-IN");
-
-                }
-
-            }
-
-        });
-
-
-        // =====================================
-        // DAILY AMOUNT
-        // =====================================
-
-        const dailyAmount =
-            Number(
-                document.getElementById("dailyPayment")?.value
-            ) || 0;
-
-
-        // =====================================
-        // 30 DAYS
-        // =====================================
-
-        const totalDays = 30;
-
-
-        for (
-            let i = 1;
-            i <= totalDays;
-            i++
-        ) {
-
-            const paid =
-                Number(payments[i] || 0);
-
-            const amount =
-                dailyAmount > 0
-                    ? dailyAmount
-                    : originalAmount / totalDays;
-
-            const remaining =
-                Math.max(
-                    amount - paid,
-                    0
-                );
-
-            const date =
-                dates[i] || "-";
-
-
-            // FULLY PAID
-            if (
-                paid >= amount &&
-                amount > 0
-            ) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Day ${i}
-                        </td>
-
-                        <td>
-                            ₹${paid.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            ${date}
-                        </td>
-
-                        <td class="paid">
-                            ✅ Paid
-                        </td>
-
-                        <td>
-
-                            <button
-                                disabled
-                                style="
-                                    background:green;
-                                    color:white;
-                                    border:none;
-                                    padding:6px 12px;
-                                    border-radius:5px;
-                                "
-                            >
-                                Paid
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-            // PARTIAL
-            else if (
-                paid > 0
-            ) {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Day ${i}
-                        </td>
-
-                        <td>
-
-                            ₹${paid.toLocaleString("en-IN")}
-                            /
-                            ₹${amount.toLocaleString("en-IN")}
-
-                            <br>
-
-                            <small style="color:red">
-                                Balance:
-                                ₹${remaining.toLocaleString("en-IN")}
-                            </small>
-
-                        </td>
-
-                        <td>
-                            ${date}
-                        </td>
-
-                        <td class="pending">
-                            🟠 Partial
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openCollection(
-                                        'daily',
-                                        ${i},
-                                        ${remaining}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-            // PENDING
-            else {
-
-                tbody.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            Day ${i}
-                        </td>
-
-                        <td>
-                            ₹${amount.toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            -
-                        </td>
-
-                        <td class="pending">
-                            🟠 Pending
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="pay-btn"
-                                onclick="
-                                    openCollection(
-                                        'daily',
-                                        ${i},
-                                        ${amount}
-                                    )
-                                "
-                            >
-                                Pay
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Daily Collection Error:",
-            error
-        );
-
-    }
-
-}

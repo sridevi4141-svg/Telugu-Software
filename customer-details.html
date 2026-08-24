@@ -414,56 +414,65 @@ src="user.png">
 
 <div class="loan-card">
 
-<h3>💰 Loan Details</h3>
+    <h3>💰 Loan Details</h3>
 
-<label>మొత్తం</label>
+    <label>మొత్తం</label>
 
-<input
-type="number"
-id="amount">
-
-<label>చెల్లించాల్సిన మొత్తం</label>
-
-<input
-type="number"
-id="toPay"
-oninput="calculateWeekly()">
-
-<label>వారాల సంఖ్య</label>
-
-<input
-type="number"
-id="weeks"
-oninput="calculateWeekly()">
-
-<label>వారానికి చెల్లింపు</label>
-
-<input
-type="number"
-id="weeklyPayment"
-readonly>
-
-<label>నెలకు చెల్లింపు</label>
-
-<input
-type="number"
-id="monthlyPayment"
-placeholder="Monthly Payment">
+    <input
+        type="number"
+        id="amount"
+        placeholder="Total Loan Amount">
 
 
-<label>రోజుకు చెల్లింపు</label>
+    <label>చెల్లించాల్సిన మొత్తం</label>
 
-<input
-type="number"
-id="dailyPayment"
-placeholder="Daily Payment">
-<button
-class="save-btn"
-onclick="saveLoan()">
+    <input
+        type="number"
+        id="toPay"
+        oninput="calculatePayments()"
+        placeholder="Remaining Amount">
 
-Save Loan Details
 
-</button>
+    <label>వారాల సంఖ్య</label>
+
+    <input
+        type="number"
+        id="weeks"
+        oninput="calculatePayments()"
+        placeholder="Number of Weeks">
+
+
+    <label>వారానికి చెల్లింపు</label>
+
+    <input
+        type="number"
+        id="weeklyPayment"
+        readonly>
+
+
+    <label>నెలకు చెల్లింపు</label>
+
+    <input
+        type="number"
+        id="monthlyPayment"
+        placeholder="Monthly Payment">
+
+
+    <label>రోజుకు చెల్లింపు</label>
+
+    <input
+        type="number"
+        id="dailyPayment"
+        placeholder="Daily Payment">
+
+
+    <button
+        class="save-btn"
+        onclick="saveLoan()">
+
+        Save Loan Details
+
+    </button>
 
 </div>
  <div class="loan-summary">
@@ -497,25 +506,35 @@ Save Loan Details
 <div class="collection-options">
 
     <button
+        id="weeklyBtn"
         class="collection-btn active"
         onclick="showCollection('weekly')">
+
         📅 Weekly
+
     </button>
 
+
     <button
+        id="monthlyBtn"
         class="collection-btn"
         onclick="showCollection('monthly')">
+
         🗓️ Monthly
+
     </button>
 
+
     <button
+        id="dailyBtn"
         class="collection-btn"
         onclick="showCollection('daily')">
+
         📆 Daily
+
     </button>
 
 </div>
-
 
 <!-- ========================================= -->
 <!-- WEEKLY COLLECTION -->
@@ -532,35 +551,21 @@ Save Loan Details
         <thead>
 
             <tr>
-
                 <th>వారం</th>
-
                 <th>మొత్తం</th>
-
                 <th>తేదీ</th>
-
                 <th>స్థితి</th>
-
                 <th>చర్య</th>
-
             </tr>
 
         </thead>
 
-        <tbody id="paymentTable">
-
-        </tbody>
+        <tbody id="paymentTable"></tbody>
 
     </table>
 
 </div>
-
-
-<!-- ========================================= -->
-<!-- MONTHLY COLLECTION -->
-<!-- ========================================= -->
-
-<div
+<<div
     id="monthlyCollection"
     class="collection-section"
     style="display:none;">
@@ -572,29 +577,20 @@ Save Loan Details
         <thead>
 
             <tr>
-
                 <th>నెల</th>
-
                 <th>మొత్తం</th>
-
                 <th>తేదీ</th>
-
                 <th>స్థితి</th>
-
                 <th>చర్య</th>
-
             </tr>
 
         </thead>
 
-        <tbody id="monthlyPaymentTable">
-
-        </tbody>
+        <tbody id="monthlyPaymentTable"></tbody>
 
     </table>
 
 </div>
-
 
 <!-- ========================================= -->
 <!-- DAILY COLLECTION -->
@@ -612,30 +608,20 @@ Save Loan Details
         <thead>
 
             <tr>
-
                 <th>రోజు</th>
-
                 <th>మొత్తం</th>
-
                 <th>తేదీ</th>
-
                 <th>స్థితి</th>
-
                 <th>చర్య</th>
-
             </tr>
 
         </thead>
 
-        <tbody id="dailyPaymentTable">
-
-        </tbody>
+        <tbody id="dailyPaymentTable"></tbody>
 
     </table>
 
 </div>
-
-
 <!-- ========================================= -->
 <!-- PAYMENT POPUP -->
 <!-- ========================================= -->
@@ -646,9 +632,22 @@ Save Loan Details
 
     <div class="popup-content">
 
-        <h3 id="weekTitle">
-            వారం
+        <h3 id="paymentTitle">
+            Payment
         </h3>
+
+
+        <!-- Payment Type -->
+        <input
+            type="hidden"
+            id="paymentType">
+
+
+        <!-- Week / Month / Day -->
+        <input
+            type="hidden"
+            id="paymentPeriod">
+
 
         <label>
             Received Amount
@@ -656,15 +655,20 @@ Save Loan Details
 
         <input
             type="number"
-            id="paidAmount">
+            id="paidAmount"
+            placeholder="Enter Amount"
+            min="1"
+            step="0.01">
+
 
         <button
             class="save-btn"
-            onclick="saveWeekPayment()">
+            onclick="savePayment()">
 
-            Save Payment
+            💰 Save Payment
 
         </button>
+
 
         <button
             class="cancel-btn"
