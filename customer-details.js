@@ -1435,18 +1435,24 @@ function () {
 // Week 15 = ₹200 Partial
 // =====================================================
 
+// =====================================================
+// SAVE PAYMENT
+// IMPORTANT:
+// PAYMENT ALWAYS CLEARS EARLIEST PENDING WEEK FIRST
+// =====================================================
+
 window.savePayment =
 async function () {
+
+    // =================================================
+    // OWNER LOGIN
+    // =================================================
 
     const ownerData =
         localStorage.getItem(
             "ownerLogin"
         );
 
-
-    // =================================================
-    // OWNER LOGIN CHECK
-    // =================================================
 
     if (!ownerData) {
 
@@ -1502,7 +1508,7 @@ async function () {
 
 
     // =================================================
-    // PAYMENT AMOUNT
+    // ENTERED PAYMENT AMOUNT
     // =================================================
 
     const paidAmount =
@@ -1519,29 +1525,6 @@ async function () {
 
         alert(
             "దయచేసి చెల్లింపు మొత్తాన్ని నమోదు చేయండి"
-        );
-
-        return;
-
-    }
-
-
-    // =================================================
-    // SELECTED WEEK
-    // =================================================
-
-    const paymentPeriod =
-        Number(
-            selectedWeek
-        );
-
-
-    if (
-        paymentPeriod <= 0
-    ) {
-
-        alert(
-            "దయచేసి ఒక వారం ఎంచుకోండి"
         );
 
         return;
@@ -1605,7 +1588,7 @@ async function () {
 
 
         // =================================================
-        // LOAN BALANCE
+        // LOAN DETAILS
         // =================================================
 
         const currentBalance =
@@ -1614,28 +1597,44 @@ async function () {
             );
 
 
+        const totalWeeks =
+            Number(
+                customer.weeks || 0
+            );
+
+
+        const weeklyAmount =
+            Number(
+                customer.weeklyPayment || 0
+            );
+
+
+        const alreadyPaidWeeks =
+            Number(
+                customer.alreadyPaidWeeks || 0
+            );
+
+
+        // =================================================
+        // VALIDATION
+        // =================================================
+
         if (
             currentBalance <= 0
         ) {
 
             alert(
-                "ఈ లోన్ ఇప్పటికే పూర్తిగా చెల్లించబడింది."
+                "🎉 ఈ లోన్ ఇప్పటికే పూర్తిగా చెల్లించబడింది."
             );
 
             await createWeeks(
-                Number(
-                    customer.weeks || 0
-                )
+                totalWeeks
             );
 
             return;
 
         }
 
-
-        // =================================================
-        // PAYMENT CANNOT EXCEED LOAN BALANCE
-        // =================================================
 
         if (
             paidAmount >
@@ -1655,22 +1654,6 @@ async function () {
         }
 
 
-        // =================================================
-        // LOAN DETAILS
-        // =================================================
-
-        const totalWeeks =
-            Number(
-                customer.weeks || 0
-            );
-
-
-        const weeklyAmount =
-            Number(
-                customer.weeklyPayment || 0
-            );
-
-
         if (
             totalWeeks <= 0 ||
             weeklyAmount <= 0
@@ -1686,7 +1669,7 @@ async function () {
 
 
         // =================================================
-        // GET EXISTING PAYMENTS
+        // GET ALL EXISTING PAYMENTS
         // =================================================
 
         const payments =
@@ -1694,7 +1677,7 @@ async function () {
 
 
         // =================================================
-        // CALCULATE WEEK-WISE PAID AMOUNT
+        // WEEK-WISE PAYMENT TOTAL
         // =================================================
 
         const weeklyPayments = {};
@@ -1744,79 +1727,65 @@ async function () {
 
 
         // =================================================
-        // FIND ACTUAL NEXT UNPAID WEEK
+        // IMPORTANT
+        //
+        // START FROM FIRST VISIBLE WEEK
+        //
+        // If alreadyPaidWeeks = 12
+        // Start = Week 13
+        //
+        // DO NOT USE selectedWeek HERE.
+        //
+        // This fixes:
+        //
+        // Week 19 = ₹300 paid
+        // Week 21 = ₹200 paid
+        //
+        // ₹700 payment:
+        //
+        // ₹200 -> Week 19
+        // ₹500 -> Week 21
         // =================================================
 
-        let startWeek =
-            paymentPeriod;
-
-
-        // If selected week is already fully paid,
-        // move automatically to next unpaid week.
-
-        while (
-            startWeek <= totalWeeks &&
-            Number(
-                weeklyPayments[startWeek] || 0
-            ) >= weeklyAmount
-        ) {
-
-            startWeek++;
-
-        }
-
-
-        if (
-            startWeek >
-            totalWeeks
-        ) {
-
-            alert(
-                "అన్ని వారాల చెల్లింపులు ఇప్పటికే పూర్తయ్యాయి."
-            );
-
-            await createWeeks(
-                totalWeeks
-            );
-
-            return;
-
-        }
-
-
-        // =================================================
-        // REMAINING PAYMENT TO DISTRIBUTE
-        // =================================================
-
-        let remainingPayment =
+        let paymentToDistribute =
             paidAmount;
 
 
+        let currentWeek =
+            Math.max(
+                alreadyPaidWeeks + 1,
+                1
+            );
+
+
         // =================================================
-        // SAVE PAYMENT WEEK BY WEEK
+        // STORE WHAT WAS PAID
+        // FOR SUCCESS MESSAGE
         // =================================================
-
-        let week =
-            startWeek;
-
-
-        const paymentDate =
-            new Date();
-
 
         const savedPayments = [];
 
 
+        // =================================================
+        // FIND AND CLEAR PENDING WEEKS
+        // =================================================
+
         while (
-            remainingPayment > 0 &&
-            week <= totalWeeks
+            paymentToDistribute > 0 &&
+            currentWeek <= totalWeeks
         ) {
 
             const alreadyPaid =
                 Number(
-                    weeklyPayments[week] || 0
+                    weeklyPayments[
+                        currentWeek
+                    ] || 0
                 );
 
+
+            // =================================================
+            // THIS WEEK REMAINING
+            // =================================================
 
             const weekRemaining =
                 Math.max(
@@ -1826,115 +1795,148 @@ async function () {
                 );
 
 
-            // ---------------------------------------------
-            // IF WEEK ALREADY FULLY PAID
-            // ---------------------------------------------
+            // =================================================
+            // WEEK ALREADY FULLY PAID
+            // SKIP IT
+            // =================================================
 
             if (
                 weekRemaining <= 0
             ) {
 
-                week++;
+                currentWeek++;
 
                 continue;
 
             }
 
 
-            // ---------------------------------------------
-            // AMOUNT FOR THIS WEEK
-            // ---------------------------------------------
+            // =================================================
+            // AMOUNT TO APPLY TO THIS WEEK
+            // =================================================
 
             const amountForWeek =
                 Math.min(
-                    remainingPayment,
+                    paymentToDistribute,
                     weekRemaining
                 );
 
 
-            // ---------------------------------------------
-            // SAVE PAYMENT
-            // ---------------------------------------------
+            // =================================================
+            // NEW TOTAL FOR THIS WEEK
+            // =================================================
 
-            const paymentRef =
-                await addDoc(
-                    collection(
-                        db,
-                        "payments"
-                    ),
-                    {
-
-                        ownerId:
-                            ownerId,
-
-                        customerId:
-                            customerId,
-
-                        paymentType:
-                            "weekly",
-
-                        week:
-                            week,
-
-                        amount:
-                            amountForWeek,
-
-                        paymentDate:
-                            paymentDate,
-
-                        status:
-                            amountForWeek >=
-                            weekRemaining
-                                ? "చెల్లించారు"
-                                : "కొంత చెల్లించారు"
-
-                    }
-                );
-
-
-            savedPayments.push(
-                {
-                    week:
-                        week,
-
-                    amount:
-                        amountForWeek,
-
-                    id:
-                        paymentRef.id
-                }
-            );
-
-
-            // ---------------------------------------------
-            // UPDATE LOCAL CALCULATION
-            // ---------------------------------------------
-
-            weeklyPayments[week] =
+            const newWeekTotal =
                 alreadyPaid +
                 amountForWeek;
 
 
-            remainingPayment -=
+            // =================================================
+            // STATUS
+            // =================================================
+
+            const paymentStatus =
+                newWeekTotal >= weeklyAmount
+                    ? "చెల్లించారు"
+                    : "కొంత చెల్లించారు";
+
+
+            // =================================================
+            // SAVE PAYMENT
+            // =================================================
+
+            await addDoc(
+                collection(
+                    db,
+                    "payments"
+                ),
+                {
+
+                    ownerId:
+                        ownerId,
+
+                    customerId:
+                        customerId,
+
+                    paymentType:
+                        "weekly",
+
+                    week:
+                        currentWeek,
+
+                    amount:
+                        amountForWeek,
+
+                    paymentDate:
+                        new Date(),
+
+                    status:
+                        paymentStatus
+
+                }
+            );
+
+
+            // =================================================
+            // UPDATE LOCAL WEEK TOTAL
+            // =================================================
+
+            weeklyPayments[
+                currentWeek
+            ] =
+                newWeekTotal;
+
+
+            // =================================================
+            // SAVE FOR SUCCESS MESSAGE
+            // =================================================
+
+            savedPayments.push({
+
+                week:
+                    currentWeek,
+
+                amount:
+                    amountForWeek,
+
+                totalPaid:
+                    newWeekTotal,
+
+                remaining:
+                    Math.max(
+                        weeklyAmount -
+                        newWeekTotal,
+                        0
+                    )
+
+            });
+
+
+            // =================================================
+            // REDUCE REMAINING PAYMENT
+            // =================================================
+
+            paymentToDistribute -=
                 amountForWeek;
 
 
-            // ---------------------------------------------
-            // NEXT WEEK
-            // ---------------------------------------------
+            // =================================================
+            // MOVE TO NEXT WEEK
+            //
+            // If current week is fully paid,
+            // go to next week.
+            //
+            // If partial, payment is finished
+            // because paymentToDistribute becomes 0.
+            // =================================================
 
             if (
-                weeklyPayments[week] >=
-                weeklyAmount
+                weeklyPayments[
+                    currentWeek
+                ] >= weeklyAmount
             ) {
 
-                week++;
-
-            } else {
-
-                // Partial week reached.
-                // No more distribution needed if payment ended.
-                break;
+                currentWeek++;
 
             }
 
@@ -1942,7 +1944,24 @@ async function () {
 
 
         // =================================================
-        // UPDATE CUSTOMER BALANCE
+        // SAFETY CHECK
+        // =================================================
+
+        if (
+            paymentToDistribute > 0
+        ) {
+
+            alert(
+                "చెల్లింపు మొత్తం మొత్తం వారాలకు సరిపడలేదు."
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // UPDATE LOAN BALANCE
         // =================================================
 
         const newBalance =
@@ -1968,7 +1987,7 @@ async function () {
 
 
         // =================================================
-        // UPDATE INPUT
+        // UPDATE TO PAY INPUT
         // =================================================
 
         const toPayInput =
@@ -1986,7 +2005,7 @@ async function () {
 
 
         // =================================================
-        // CLOSE POPUP
+        // CLEAR PAYMENT INPUT
         // =================================================
 
         const paidInput =
@@ -2003,30 +2022,26 @@ async function () {
         }
 
 
+        // =================================================
+        // CLOSE POPUP
+        // =================================================
+
         closePopup();
 
 
         // =================================================
-        // PAYMENT SUCCESS MESSAGE
+        // SUCCESS MESSAGE
         // =================================================
 
         let message =
-            "చెల్లింపు విజయవంతంగా సేవ్ చేయబడింది\n\n";
+            "✅ చెల్లింపు విజయవంతంగా సేవ్ చేయబడింది\n\n";
 
 
         savedPayments.forEach(
             item => {
 
-                const weekPaid =
-                    Number(
-                        weeklyPayments[
-                            item.week
-                        ] || 0
-                    );
-
-
                 if (
-                    weekPaid >=
+                    item.totalPaid >=
                     weeklyAmount
                 ) {
 
@@ -2037,17 +2052,9 @@ async function () {
                         item.amount.toLocaleString(
                             "en-IN"
                         ) +
-                        " ✅ Paid\n";
+                        " → ✅ Paid\n";
 
                 } else {
-
-                    const remaining =
-                        Math.max(
-                            weeklyAmount -
-                            weekPaid,
-                            0
-                        );
-
 
                     message +=
                         "వారం " +
@@ -2056,9 +2063,9 @@ async function () {
                         item.amount.toLocaleString(
                             "en-IN"
                         ) +
-                        " 🟠 Partial\n" +
+                        " → 🟠 Partial\n" +
                         "మిగిలినది → ₹" +
-                        remaining.toLocaleString(
+                        item.remaining.toLocaleString(
                             "en-IN"
                         ) +
                         "\n";
@@ -2068,6 +2075,10 @@ async function () {
             }
         );
 
+
+        // =================================================
+        // LOAN COMPLETED
+        // =================================================
 
         if (
             newBalance === 0
@@ -2085,7 +2096,7 @@ async function () {
 
 
         // =================================================
-        // REFRESH WEEK TABLE
+        // REFRESH WEEKS
         // =================================================
 
         await createWeeks(
@@ -2124,7 +2135,6 @@ async function () {
     }
 
 };
-
 // =====================================================
 // OLD saveWeekPayment SUPPORT
 // =====================================================
